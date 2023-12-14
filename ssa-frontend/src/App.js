@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react'
 import './App.css';
 
 function App() {
-  const [data, setData] = useState([{}])
+  const [supervisors, setSupervisors] = useState([{}])
 
   useEffect(() => {
     fetch("/supervisor-profiles").then(
       res => res.json()
     ).then(
       data => {
-        setData(data)
+        setSupervisors(data.supervisors)
         console.log(data)
       }
     )
@@ -18,15 +18,14 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div>
-          {(typeof data.supervisors === "undefined") ? (
-              <p>loading...</p>
-          ) : (
-            data.supervisors.map((supervisor, i) => (
-              <p key={i}>{supervisor}</p>
-            ))
-          )}
-        </div>
+        <h1>Supervisor Profiles</h1>
+        <ul>
+          {supervisors.map((supervisor) => (
+            <li key={supervisor.name}>
+              {supervisor.name} - {supervisor.email}
+            </li>
+          ))}
+        </ul>
         
       </header>
     </div>

@@ -1,9 +1,25 @@
-<h1>SUPERVISOR APP</h1>
-
-<form method="POST" action="">
-    Supervisor Name <input type="name" name="sp-name"/>
-    <br>
-    Supervisor Email <input type="email" name="sp-email"/>
-    <br>
-    <input type="submit"/>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+</head>
+<body>
+    <h1>SUPERVISOR APP</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+        {% for supervisor in supervisors %}
+        <tr>
+            <td>{{ supervisor.id }}</td>
+            <td>{{ supervisor.name }}</td>
+            <td>{{ supervisor.email }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

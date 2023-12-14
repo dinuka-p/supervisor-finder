@@ -9,6 +9,7 @@ mysqlclient = "==2.1.1"
 flask-mysqldb = "*"
 flask = "*"
 flask-mysql = "*"
+pyyaml = "*"
 
 [dev-packages]
 
