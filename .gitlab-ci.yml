@@ -1,4 +1,3 @@
-image: python:3.12
 
 services:
   - docker:dind
