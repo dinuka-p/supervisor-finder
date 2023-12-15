@@ -22,7 +22,7 @@ function App() {
         <ul>
           {supervisors.map((supervisor) => (
             <li key={supervisor.name}>
-              {supervisor.name} - {supervisor.email}
+              {supervisor.name} - {supervisor.email}: {supervisor.projects}
             </li>
           ))}
         </ul>

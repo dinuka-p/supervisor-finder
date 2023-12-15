@@ -11,16 +11,18 @@ db = SQLAlchemy(app)
 
 
 class Supervisors(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(200), nullable=False, unique=True)
+    supervisorID = db.Column(db.Integer, primary_key=True)
+    supervisorName = db.Column(db.String(100), nullable=False)
+    supervisorEmail = db.Column(db.String(200), nullable=False, unique=True)
+    project_keywords = db.Column(db.Text)
     def __repr__(self):
-        return '<Name %r>' %self.name
+        return '<Name %r>' %self.supervisorName
      
 
 @app.route('/')
 def index():
     supervisors = Supervisors.query.all()
+    print(supervisors)
     return render_template('index.html', supervisors=supervisors)
 
 @app.route('/supervisor-profiles')
@@ -28,7 +30,7 @@ def display_profiles():
     supervisors = Supervisors.query.all()
     output = []
     for supervisor in supervisors:
-        supervisor_data = {"name": supervisor.name, "email": supervisor.email}
+        supervisor_data = {"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.project_keywords}
         output.append(supervisor_data)
     return jsonify({"supervisors": output})
 

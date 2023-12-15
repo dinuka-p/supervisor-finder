@@ -12,12 +12,13 @@
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Projects</th>
         </tr>
         {% for supervisor in supervisors %}
         <tr>
-            <td>{{ supervisor.id }}</td>
             <td>{{ supervisor.name }}</td>
             <td>{{ supervisor.email }}</td>
+            <td>{{ supervisor.projects }}</td>
         </tr>
         {% endfor %}
     </table>
