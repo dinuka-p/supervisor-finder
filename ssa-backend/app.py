@@ -21,9 +21,8 @@ class Supervisors(db.Model):
 
 @app.route('/')
 def index():
-    supervisors = Supervisors.query.all()
-    print(supervisors)
-    return render_template('index.html', supervisors=supervisors)
+    #code for dashboard
+    return "todo"
 
 @app.route('/supervisor-profiles')
 def display_profiles():

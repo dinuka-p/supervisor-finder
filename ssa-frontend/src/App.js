@@ -1,35 +1,24 @@
-import React, { useState, useEffect } from 'react'
-import './App.css';
+import "./App.css";
+import Sidebar from "./components/Sidebar";
+import SupervisorProfiles from "./components/SupervisorProfiles";
+import Dashboard from "./components/Dashboard";
+import UserProfile from "./components/UserProfile";
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
+
 
 function App() {
-  const [supervisors, setSupervisors] = useState([{}])
-
-  useEffect(() => {
-    fetch("/supervisor-profiles").then(
-      res => res.json()
-    ).then(
-      data => {
-        setSupervisors(data.supervisors)
-        console.log(data)
-      }
-    )
-  }, [])
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Supervisor Profiles</h1>
-        <ul>
-          {supervisors.map((supervisor) => (
-            <li key={supervisor.name}>
-              {supervisor.name} - {supervisor.email}: {supervisor.projects}
-            </li>
-          ))}
-        </ul>
-        
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+          <Sidebar/>
+        <Routes>
+          <Route path="/" element={<Dashboard/>} />
+          <Route path="/supervisor-profiles" element={<SupervisorProfiles/>} />
+          <Route path="/your-profile" element={<UserProfile/>} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
-}
+ }
 
 export default App;

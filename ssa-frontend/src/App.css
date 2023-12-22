@@ -1,38 +1,119 @@
 .App {
   text-align: center;
+  background-color: #f1f1f1;
+  display: flex;
+  height: 100vh;
+  width: auto;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.sidebar {
+  width: 30%;
+  max-width: 250px;
+  min-height: 100%;
+  background-color: #014254;
+  color: #f1f1f1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.sidebar-heading {
+  display: flex;
+  margin-top: 15px;
+  margin-bottom: 40px;
+  padding-right: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.sidebar-title {
+  text-align: left;
+}
+
+.sidebar-logo {
+  width: 60px;
+  height: 60px;
+  padding-left: 8%;
+  padding-right: 10px;
+  padding-top: 10px;
+}
+
+.sidebar-items {
+  height: auto;
+  width: 100%;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.sidebar-items .sidebar-row {
+  width: 80%;
+  height: 60px;
+  margin: 0;
+  list-style-type: none;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+.sidebar-items .sidebar-row:hover {
+  color:cadetblue ;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.sidebar-items #active {
+  background-color: #f1f1f1;
+  color: #014254;
+  border-radius: 10px;
+}
+
+.sidebar-row #icon {
+  flex: 30%;
+  display: grid;
+  place-items: center;
+}
+
+.sidebar-row #title {
+  flex: 70%;
+  text-align: left;
+  font-size: larger;
+  font-weight: 500;
+}
+
+.page-content {
+  overflow: auto;
+}
+
+.page-title {
+  color: #014254;
+  text-align: left;
+  padding-left: 40px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.supervisor-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
+  grid-gap: 12px;
+  margin: 0px 20px;
+}
+
+.supervisor-summary {
+  background-color: #ffffff;
+  color: #014254;
+  border-radius: 10px;
+  height: 200px;
+  margin: 10px;
+  text-align: left;
+  padding: 0% 7%;
+}
+
+.supervisor-name {
+  margin-bottom: 5px;
+}
+.supervisor-email {
+  margin-top: 5px;
+}
+
+.supervisor-projects {
+  overflow: hidden;
+  max-height: 100px;
 }
