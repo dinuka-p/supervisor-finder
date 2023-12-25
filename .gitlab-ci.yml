@@ -37,4 +37,4 @@ deploy-job:      # This job runs in the deploy stage.
   environment:
     name: production
   only:
-    - master
+    - main
