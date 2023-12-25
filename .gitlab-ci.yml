@@ -33,6 +33,7 @@ deploy-job:      # This job runs in the deploy stage.
   script:
     - echo "Starting deployment to Oracle Linux 8 instance..."
     - ssh -i $SSH_PRIVATE_KEY opc@132.145.50.24 "sudo systemctl restart application"
+    - echo "Deployment successful"
   environment:
     name: production
   only:
