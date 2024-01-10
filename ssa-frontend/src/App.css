@@ -74,7 +74,7 @@
 .sidebar-row #title {
   flex: 70%;
   text-align: left;
-  font-size: x-large;
+  font-size: larger;
   font-weight: 500;
 }
 
@@ -99,7 +99,6 @@
   align-content: flex-start;
   min-width: 200px;
   padding: 0 30px;
-  margin-bottom: 20px;
 }
 
 .search-bar-div {
@@ -127,6 +126,35 @@
 #search-icon {
   color: #014254;
   margin: 0 10px;
+}
+
+.filter-container {
+  display: flex;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+
+.filter-by-text {
+  margin-left: 30px;
+  margin-right: 10px;
+}
+
+.filter-button {
+  margin: 5px 5px;
+  padding: 10px;
+  background-color: #ffffff;
+  color: #014254;
+  border-radius: 10px;
+  border: none;
+}
+
+.filter-button:hover {
+  color:cadetblue ;
+}
+
+.filter-button.active {
+  color: #f1f1f1;
+  background-color: #014254; ;
 }
 
 .supervisor-boxes {
