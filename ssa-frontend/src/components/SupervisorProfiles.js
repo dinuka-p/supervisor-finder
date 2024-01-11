@@ -17,7 +17,7 @@ function SupervisorProfiles() {
       ).then(
       data => {
           setSupervisors(data.supervisors)
-          setFilteredSupervisors(data.supervisors)
+          setFilteredSupervisors(data.supervisors.sort((a, b) => a.name.localeCompare(b.name)))
       }
       )
   }, [])
@@ -36,13 +36,14 @@ function SupervisorProfiles() {
     filterSupervisors();
   }, [selectedFilters])
 
+  //filter buttons handling
   const filterSupervisors = () => {
     if (selectedFilters.length > 0) {
       let tempSupervisors = selectedFilters.map((selectedCategory) => {
         let temp = supervisors.filter((supervisor) => supervisor.filter_words.includes(selectedCategory))
         return temp
       });
-      setFilteredSupervisors(tempSupervisors.flat())
+      setFilteredSupervisors(tempSupervisors.flat().sort((a, b) => a.name.localeCompare(b.name)))
     } else {
       setFilteredSupervisors([...supervisors])
     }
@@ -88,6 +89,7 @@ function SupervisorProfiles() {
 
         <div className="supervisor-boxes">
           {filteredSupervisors.filter((supervisor) => {
+                //search bar handling
                 if (searchTerm == "") {
                     return supervisor
                 } else if (

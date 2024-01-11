@@ -3,7 +3,7 @@ import Sidebar from "./components/Sidebar";
 import SupervisorProfiles from "./components/SupervisorProfiles";
 import Dashboard from "./components/Dashboard";
 import UserProfile from "./components/UserProfile";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 
 function App() {
