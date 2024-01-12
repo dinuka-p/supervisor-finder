@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import "../App.css"
 import {FaSearch} from "react-icons/fa"
+import {motion} from "framer-motion"
 
 function SupervisorProfiles() {
   const [supervisors, setSupervisors] = useState([{}]);
@@ -41,13 +42,16 @@ function SupervisorProfiles() {
     if (selectedFilters.length > 0) {
       let tempSupervisors = selectedFilters.map((selectedCategory) => {
         let temp = supervisors.filter((supervisor) => supervisor.filter_words.includes(selectedCategory))
-        return temp
+        return temp.map((supervisor) => ({ ...supervisor, id: supervisor.id }));
       });
-      setFilteredSupervisors(tempSupervisors.flat().sort((a, b) => a.name.localeCompare(b.name)))
+      let flattenedSupervisors = tempSupervisors.flat();
+      let uniqueSupervisors = Array.from(new Set(flattenedSupervisors.map((supervisor) => supervisor.id))).map((id) => {
+        return flattenedSupervisors.find((supervisor) => supervisor.id === id);
+      });
+      setFilteredSupervisors(uniqueSupervisors.sort((a, b) => a.name.localeCompare(b.name)))
     } else {
       setFilteredSupervisors([...supervisors])
     }
-    
   }
 
   const handleFilterClick = (selectedCategory) => {
@@ -56,7 +60,11 @@ function SupervisorProfiles() {
     } else {
       setSelectedFilters([...selectedFilters, selectedCategory]);
     }
- };
+  };
+
+  const handleSupervisorClick = (selectedSupervisor) => {
+    
+  };
 
   return (
       <div className="page-content">
@@ -87,7 +95,7 @@ function SupervisorProfiles() {
           </div>
         </div>
 
-        <div className="supervisor-boxes">
+        <motion.div layout className="supervisor-boxes">
           {filteredSupervisors.filter((supervisor) => {
                 //search bar handling
                 if (searchTerm == "") {
@@ -101,13 +109,13 @@ function SupervisorProfiles() {
                 }
             }
           ).map((supervisor) => (
-            <div key={supervisor.name} className="supervisor-summary">
+            <motion.div layout key={supervisor.id} className="supervisor-summary" onClick={() => handleSupervisorClick(supervisor)}>
               <h4 className="supervisor-name">{supervisor.name}</h4>
               <p className="supervisor-email">{supervisor.email}</p>
               <p className="supervisor-projects">{supervisor.projects}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
   )
 }
