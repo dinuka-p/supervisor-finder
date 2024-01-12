@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react"
 import "../App.css"
+import { useNavigate } from "react-router-dom";
 import {FaSearch} from "react-icons/fa"
 import {motion} from "framer-motion"
 
 function SupervisorProfiles() {
-  const [supervisors, setSupervisors] = useState([{}]);
+  const navigate = useNavigate();
+  const [allSupervisors, setAllSupervisors] = useState([{}]);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -17,7 +19,7 @@ function SupervisorProfiles() {
       res => res.json()
       ).then(
       data => {
-          setSupervisors(data.supervisors)
+          setAllSupervisors(data.supervisors)
           setFilteredSupervisors(data.supervisors.sort((a, b) => a.name.localeCompare(b.name)))
       }
       )
@@ -41,7 +43,7 @@ function SupervisorProfiles() {
   const filterSupervisors = () => {
     if (selectedFilters.length > 0) {
       let tempSupervisors = selectedFilters.map((selectedCategory) => {
-        let temp = supervisors.filter((supervisor) => supervisor.filter_words.includes(selectedCategory))
+        let temp = allSupervisors.filter((supervisor) => supervisor.filter_words.includes(selectedCategory))
         return temp.map((supervisor) => ({ ...supervisor, id: supervisor.id }));
       });
       let flattenedSupervisors = tempSupervisors.flat();
@@ -50,7 +52,7 @@ function SupervisorProfiles() {
       });
       setFilteredSupervisors(uniqueSupervisors.sort((a, b) => a.name.localeCompare(b.name)))
     } else {
-      setFilteredSupervisors([...supervisors])
+      setFilteredSupervisors([...allSupervisors])
     }
   }
 
@@ -62,8 +64,8 @@ function SupervisorProfiles() {
     }
   };
 
-  const handleSupervisorClick = (selectedSupervisor) => {
-    
+  const handleSupervisorClick = (selectedSupervisorID) => {
+    navigate(`/supervisor-profile/${selectedSupervisorID}`);
   };
 
   return (
@@ -109,7 +111,7 @@ function SupervisorProfiles() {
                 }
             }
           ).map((supervisor) => (
-            <motion.div layout key={supervisor.id} className="supervisor-summary" onClick={() => handleSupervisorClick(supervisor)}>
+            <motion.div layout key={supervisor.id} className="supervisor-summary" onClick={() => handleSupervisorClick(supervisor.id)}>
               <h4 className="supervisor-name">{supervisor.name}</h4>
               <p className="supervisor-email">{supervisor.email}</p>
               <p className="supervisor-projects">{supervisor.projects}</p>

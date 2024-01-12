@@ -4,6 +4,7 @@ import SupervisorProfiles from "./components/SupervisorProfiles";
 import Dashboard from "./components/Dashboard";
 import UserProfile from "./components/UserProfile";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import SupervisorDetails from "./components/SupervisorDetails";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard/>} />
           <Route path="/supervisor-profiles" element={<SupervisorProfiles/>} />
+          <Route path="/supervisor-profile/:id" element={<SupervisorDetails/>} />
           <Route path="/your-profile" element={<UserProfile/>} />
         </Routes>
       </div>

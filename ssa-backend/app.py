@@ -15,6 +15,8 @@ class Supervisors(db.Model):
     supervisorEmail = db.Column(db.String(200), nullable=False, unique=True)
     project_keywords = db.Column(db.Text)
     filter_words = db.Column(db.Text)
+    preferred_contact = db.Column(db.Text)
+    location = db.Column(db.String(50))
     def __repr__(self):
         return '<Name %r>' %self.supervisorName
      
@@ -29,7 +31,7 @@ def display_profiles():
     supervisors = Supervisors.query.all()
     output = []
     for supervisor in supervisors:
-        supervisor_data = {"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.project_keywords, "filter_words":supervisor.filter_words}
+        supervisor_data = {"id":supervisor.supervisorID,"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.project_keywords, "filter_words":supervisor.filter_words}
         output.append(supervisor_data)
     return jsonify({"supervisors": output})
 
@@ -47,5 +49,26 @@ def display_filters():
         output.append(item)
     return jsonify({"allFilters": output})
 
+@app.route('/supervisor-details/<int:id>', methods=['GET'])
+def display_supervisor_details(id):
+    supervisor = Supervisors.query.get(id)
+    filter_list = []
+    if supervisor:
+        unique_filters = supervisor.filter_words.split(',')
+        for filters in unique_filters:
+            filter_list.append(filters)
+        supervisor_data = {
+            "id": supervisor.supervisorID,
+            "name": supervisor.supervisorName,
+            "email": supervisor.supervisorEmail,
+            "projects": supervisor.project_keywords,
+            "filter_words": filter_list,
+            "contact": supervisor.preferred_contact,
+            "location": supervisor.location
+        }
+        return jsonify({"supervisor_info": supervisor_data})
+    else:
+        return jsonify({"error": "Supervisor not found"}), 404
+
 if __name__ == "__main__":
-    app.run(debug=True) #changes are updated immediately - set to False once in production
+    app.run(debug=False) #changes are updated immediately - set to False once in production
