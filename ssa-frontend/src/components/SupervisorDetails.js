@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import "../App.css"
 
-function SupervisorDetails(supervisorID) {
+function SupervisorDetails() {
     const { id } = useParams();
     const [supervisorData, setSupervisorData] = useState(null)
 
@@ -17,6 +17,7 @@ function SupervisorDetails(supervisorID) {
         )
     }, [id])
 
+    //TODO - if nothing is returned, display an error page
     if (!supervisorData) {
         return <div>Loading...</div>
     }

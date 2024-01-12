@@ -68,6 +68,56 @@ function SupervisorProfiles() {
     navigate(`/supervisor-profile/${selectedSupervisorID}`);
   };
 
+  // const handleDownloadClick = () => {
+  //   fetch("/download-supervisor-table")
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         const filename = response.headers.get('Content-Disposition')
+  //           .split('filename=')[1]
+  //           .replace(/"/g, '');
+  //         return { blob: response.blob(), filename };
+  //       } else {
+  //         throw new Error("Failed to download file");
+  //       }
+  //     })
+  //     .then(({ blob, filename }) => {
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement("a");
+  //       a.href = url;
+  //       a.download = filename; 
+  //       document.body.appendChild(a);
+  //       a.click();
+  //       document.body.removeChild(a);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
+  const handleDownloadClick = () => {
+    fetch("/download-supervisor-table")
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error("Failed to download file");
+        }
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        a.href = url;
+        a.download = "supervisors.xlsx"; // Specify the default filename
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  
+
   return (
       <div className="page-content">
       
@@ -81,6 +131,7 @@ function SupervisorProfiles() {
                     value={searchTerm}
                     onChange={(e) => {setSearchTerm(e.target.value);}}/>
           </div>
+          <button className="download-button" onClick={handleDownloadClick}>Download Supervisor Profiles</button>
         </div>
 
         <div className="filter-container">
