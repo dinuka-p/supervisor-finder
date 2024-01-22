@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.21119468.css",
+    "main.js": "/static/js/main.a32b8610.js",
+    "static/js/787.537d721f.chunk.js": "/static/js/787.537d721f.chunk.js",
+    "static/media/uob-logo.png": "/static/media/uob-logo.4620f39e36b39af6f8ad.png",
+    "index.html": "/index.html",
+    "main.21119468.css.map": "/static/css/main.21119468.css.map",
+    "main.a32b8610.js.map": "/static/js/main.a32b8610.js.map",
+    "787.537d721f.chunk.js.map": "/static/js/787.537d721f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.21119468.css",
+    "static/js/main.a32b8610.js"
+  ]
+}

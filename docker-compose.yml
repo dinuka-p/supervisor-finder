@@ -2,36 +2,39 @@ version: '3.7'
 
 services:
  frontend:
-    image: node:14
+    image: node:14-alpine
     container_name: frontend
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/ssa-frontend
+      - /ssa-frontend/node_modules
     working_dir: /app
     command: sh -c "npm install && npm run build"
+    depends_on:
+      - backend
     environment:
       - CHOKIDAR_USEPOLLING=true
     networks:
-      - frontend_network
+      - app_network
 
  backend:
     image: python:3.8-slim
     container_name: backend
     volumes:
-      - .:/app
-      - /app/node_modules
-    working_dir: /app
-    command: sh -c "pip install --trusted-host pypi.python.org -r requirements.txt && python run.py"
+      - .:/ssa-backend
+    working_dir: /ssa-backend
+    command: sh -c "pip install --trusted-host pypi.python.org -r requirements.txt && python app.py"
     ports:
       - 5000:5000
     depends_on:
       - db
     environment:
-      - FLASK_APP=run.py
+      - FLASK_APP=app.py
       - FLASK_ENV=development
-      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
+      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:<MYSQL_PASSWORD_SECRET>@db:3306/${MYSQL_DB}
+    secrets:
+      - mysql_password
     networks:
-      - frontend_network
+      - app_network
 
  db:
     image: mysql:5.7
@@ -40,15 +43,18 @@ services:
       - db_data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_DATABASE: ${MYSQL_DB}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_USER=my_user
+      - MYSQL_DATABASE=my_database
     networks:
-      - frontend_network
+      - app_network
+
+secrets:
+  mysql_password:
+    file: ./secrets/mysql_password.txt
 
 volumes:
  db_data:
 
 networks:
- frontend_network:
+ app_network:
     driver: bridge
