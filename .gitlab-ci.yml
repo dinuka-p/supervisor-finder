@@ -6,6 +6,7 @@ variables:
 stages:          # List of stages for jobs, and their order of execution
   - build
   - test
+  - release
   - deploy
 
 build-job:       # This job runs in the build stage, which runs first.
@@ -32,6 +33,48 @@ lint-test-job:   # This job also runs in the test stage.
   script:
     - echo "Linting code... This will take about 10 seconds."
     - echo "No lint issues found."
+
+docker-build-master:
+  # Official docker image.
+  image: docker:latest
+  stage: release
+  services:
+   - name: docker:dind
+
+  variables:
+    DOCKER_HOST: 'tcp://docker:2375/'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - apk add nmap
+    - nmap -sT -p- docker
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" ./.devcontainer
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+     - master
+
+docker-build:
+  # Official docker image.
+  image: docker:latest
+  stage: release
+  services:
+    - docker:dind
+
+  variables:
+    DOCKER_HOST: 'tcp://docker:2375/'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA" ./.devcontainer
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA"
+  except:
+    - master
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
