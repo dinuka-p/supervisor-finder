@@ -34,7 +34,7 @@ lint-test-job:   # This job also runs in the test stage.
     - echo "Linting code... This will take about 10 seconds."
     - echo "No lint issues found."
 
-docker-build-master:
+docker-build-main:
   # Official docker image.
   image: docker:latest
   stage: release
@@ -42,7 +42,7 @@ docker-build-master:
    - name: docker:dind
 
   variables:
-    DOCKER_HOST: 'tcp://docker:2375/'
+    #DOCKER_HOST: 'tcp://docker:2375/'
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
 
@@ -54,7 +54,7 @@ docker-build-master:
     - docker build --pull -t "$CI_REGISTRY_IMAGE" ./.devcontainer
     - docker push "$CI_REGISTRY_IMAGE"
   only:
-     - master
+     - main
 
 docker-build:
   # Official docker image.
@@ -64,7 +64,7 @@ docker-build:
     - docker:dind
 
   variables:
-    DOCKER_HOST: 'tcp://docker:2375/'
+    #DOCKER_HOST: 'tcp://docker:2375/'
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
 
@@ -74,7 +74,7 @@ docker-build:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA" ./.devcontainer
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA"
   except:
-    - master
+    - main
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
