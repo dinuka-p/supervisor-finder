@@ -77,6 +77,7 @@ docker-build:
     - main
 
 deploy-job:      # This job runs in the deploy stage.
+  image: alpine:latest
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   when: on_success
   before_script:
