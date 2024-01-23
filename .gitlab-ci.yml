@@ -80,6 +80,8 @@ deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   when: on_success
   before_script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
     - echo $SSH_PRIVATE_KEY | tr -d '\r' > ~/.ssh/id_rsa
     - chmod og= ~/.ssh/id_rsa
     - apk update && apk add openssh-client
