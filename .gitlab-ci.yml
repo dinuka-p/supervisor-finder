@@ -81,19 +81,18 @@ deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   when: on_success
   before_script:
-    - mkdir -p ~/.ssh
     - chmod og= $SSH_PRIVATE_KEY
     - apk update && apk add openssh-client
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml down || true"
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker rm -f $(docker ps -a -q) || true"
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker volume rm $(docker volume ls -q) || true"
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "rm -rf ~/$CI_PROJECT_DIR || true"
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker pull ${CI_REGISTRY_IMAGE}:v1:0"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml down || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker rm -f $(docker ps -a -q) || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker volume rm $(docker volume ls -q) || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "rm -rf ~/$CI_PROJECT_DIR || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker pull ${CI_REGISTRY_IMAGE}:v1:0"
   script: 
-      - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_sha -r . $VM_USER@$VM:~/$CI_PROJECT_DIR
-      - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "sed -i '5s|teamproject|$CI_IMG|’ ~/$CI_PROJECT_DIR/docker-compose.yml" 
-      - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml up -d"
+      - scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY -r . $VM_USER@$VM:~/$CI_PROJECT_DIR
+      - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i '5s|teamproject|$CI_IMG|’ ~/$CI_PROJECT_DIR/docker-compose.yml" 
+      - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml up -d"
   environment:
     name: production
   only:
