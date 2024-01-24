@@ -82,10 +82,7 @@ deploy-job:      # This job runs in the deploy stage.
   when: on_success
   before_script:
     - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo $SSH_PRIVATE_KEY | tr -d '\r' > ~/.ssh/id_sha
-    - chmod 600 ~/.ssh/id_sha
-    - ssh-add
+    - chmod og= $SSH_PRIVATE_KEY
     - apk update && apk add openssh-client
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml down || true"
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_sha $VM_USER@$VM "docker rm -f $(docker ps -a -q) || true"
