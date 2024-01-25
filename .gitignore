@@ -26,4 +26,3 @@ yarn-error.log*
 /ssa-backend/__pycache__
 __pycache__
 ssa-backend/env
-ssa-backend/env-bak
