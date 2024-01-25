@@ -54,6 +54,6 @@ deploy-job:      # This job runs in the deploy stage.
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml pull"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml up -d --remove-orphans"
   environment:
-    name: production
+    name: production 
   only:
     - main
