@@ -14,8 +14,8 @@ build-frontend:
     name: gcr.io/kaniko-project/executor:v1.14.0-debug
     entrypoint: [""]
   script:
-    - cp $DOCKER_CONFIG /kaniko
-    - export DOCKER_CONFIG=/kaniko/config.json
+    - cp $DOCKER_CONFIG /kaniko/config.json
+    - export DOCKER_CONFIG=/kaniko
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/ssa-frontend"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
