@@ -46,17 +46,13 @@ deploy-job:      # This job runs in the deploy stage.
   when: on_success
   before_script:
     - chmod og= $SSH_PRIVATE_KEY
-    - apk update && apk add openssh-client python
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml down || true"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker rm -f $(docker ps -a -q) || true"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker volume rm $(docker volume ls -q) || true"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "rm -rf ~/$CI_PROJECT_DIR || true"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker pull ${CI_REGISTRY_IMAGE}:latest"
+    - apk update && apk add openssh-client
   script: 
-      - scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY -r . $VM_USER@$VM:~/$CI_PROJECT_DIR
-      - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i '5s|teamproject|$CI_IMG|’ ~/$CI_PROJECT_DIR/docker-compose.yml" 
-      - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml up -d"
+    - cat docker-compose.yml |ssh $VM_USER@$VM -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY "cat > ~/fyp-deployment/docker-compose.yml"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i '5s|projectimage|$CI_IMG|’ ~/fyp-deployment/docker-compose.yml" 
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml pull"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml up -d --remove-orphans"
   environment:
     name: production
   only:
