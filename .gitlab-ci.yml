@@ -14,9 +14,8 @@ build-frontend:
     name: gcr.io/kaniko-project/executor:v1.14.0-debug
     entrypoint: [""]
   script:
-    - mkdir -p  /kaniko/.docker/
-    - cp $DOCKER_CONFIG /kaniko/.docker/config.json
-    - export DOCKER_CONFIG=/kaniko/.docker/config.json
+    - cp $DOCKER_CONFIG /kaniko
+    - export DOCKER_CONFIG=/kaniko/config.json
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/ssa-frontend"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
@@ -32,9 +31,8 @@ build-backend:
     name: gcr.io/kaniko-project/executor:v1.14.0-debug
     entrypoint: [""]
   script:
-    - mkdir -p  /kaniko/.docker/
-    - cp $DOCKER_CONFIG /kaniko/.docker/config.json
-    - export DOCKER_CONFIG=/kaniko/.docker/config.json
+    - cp $DOCKER_CONFIG /kaniko/config.json
+    - export DOCKER_CONFIG=/kaniko
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/ssa-backend"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
