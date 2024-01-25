@@ -1,52 +1,65 @@
 version: '3.7'
 
 services:
- frontend:
-    image: node:14-alpine
-    container_name: frontend
-    volumes:
-      - .:/ssa-frontend
-      - /ssa-frontend/node_modules
-    working_dir: /app
-    command: sh -c "npm install && npm run build"
-    depends_on:
-      - backend
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    networks:
-      - app_network
+#  frontend:
+#     image: node:14-alpine
+#     container_name: frontend
+#     volumes:
+#       - .:/ssa-frontend
+#       - /ssa-frontend/node_modules
+#     working_dir: /app
+#     command: sh -c "npm install && npm run build"
+#     depends_on:
+#       - backend
+#     environment:
+#       - CHOKIDAR_USEPOLLING=true
+#     networks:
+#       - app_network
 
- backend:
-    image: python:3.8-slim
-    container_name: backend
-    volumes:
-      - .:/ssa-backend
-    working_dir: /ssa-backend
-    command: sh -c "pip install --trusted-host pypi.python.org -r requirements.txt && python app.py"
+#  backend:
+#     image: python:3.8-slim
+#     container_name: backend
+#     volumes:
+#       - .:/ssa-backend
+#     working_dir: /ssa-backend
+#     command: sh -c "pip install --trusted-host pypi.python.org -r requirements.txt && python app.py"
+#     ports:
+#       - 127.0.0.1:5001:5000
+#     depends_on:
+#       - db
+#     environment:
+#       - FLASK_APP=app.py
+#       - FLASK_ENV=development
+#       - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:<MYSQL_PASSWORD_SECRET>@db:3306/${MYSQL_DB}
+#     secrets:
+#       - mysql_password
+#     networks:
+#       - app_network
+  frontend:
+    image: projectimage:frontend
+    build: ssa-frontend
     ports:
-      - 5000:5000
-    depends_on:
-      - db
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
-      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:<MYSQL_PASSWORD_SECRET>@db:3306/${MYSQL_DB}
-    secrets:
-      - mysql_password
-    networks:
-      - app_network
+      - "3001:80"
+    restart: always
 
- db:
+  backend:
+    image: projectimage:backend
+    build: ssa-backend
+    ports:
+      - "5001:5000"
+    restart: always
+
+
+  db:
     image: mysql:5.7
-    container_name: db
     volumes:
       - db_data:/var/lib/mysql
     restart: always
     environment:
-      - MYSQL_USER=my_user
-      - MYSQL_DATABASE=my_database
-    networks:
-      - app_network
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: my_database
+    # networks:
+    #   - app_network
 
 secrets:
   mysql_password:
@@ -55,6 +68,6 @@ secrets:
 volumes:
  db_data:
 
-networks:
- app_network:
-    driver: bridge
+# networks:
+#  app_network:
+#     driver: bridge

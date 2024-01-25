@@ -1,8 +1,12 @@
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 from io import BytesIO
 import yaml
+from gevent.pywsgi import WSGIServer
 
 app = Flask(__name__)
 mysqlDB = yaml.load(open("db.yaml"), Loader=yaml.FullLoader)
@@ -89,5 +93,9 @@ def download_supervisor_table():
     response.headers['Content-Disposition'] = 'attachment; filename="supervisors.xlsx"'
     return response
 
-if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
+# if __name__ == "__main__":
+#     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
+
+http_server = WSGIServer(("0.0.0.0", 8088), app)
+print('starting...', flush=True)
+http_server.serve_forever()

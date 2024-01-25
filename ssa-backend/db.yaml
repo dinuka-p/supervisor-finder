@@ -1,4 +1,5 @@
-mysql_host: 'localhost'
+mysql_host: 'db'
 mysql_user: 'root'
-mysql_password: '!mYSqlPW'
+mysql_password: ''
+# mysql_password: '!mYSqlPW'
 mysql_db: 'supervisor_allocation_db'
