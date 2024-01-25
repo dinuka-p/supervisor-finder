@@ -11,11 +11,10 @@ build-frontend:
   # Official docker image.
   image: 
     name: gcr.io/kaniko-project/executor
-    entrypoint: [""]
   stage: build
   script:
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/ssa-frontend"
+    - --context "${CI_PROJECT_DIR}/ssa-frontend"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --cache=true
       --destination "$CI_REGISTRY_IMAGE:frontend"
   only:
@@ -25,11 +24,10 @@ build-backend:
   # Official docker image.
   image: 
     name: gcr.io/kaniko-project/executor
-    entrypoint: [""]
   stage: build
   script:
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/ssa-backend"
+    - --context "${CI_PROJECT_DIR}/ssa-backend"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --cache=true
       --destination "$CI_REGISTRY_IMAGE:backend"
   only:
