@@ -57,7 +57,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-      MYSQL_DATABASE: my_database
+      MYSQL_DATABASE: supervisor_allocation_db
     # networks:
     #   - app_network
 
