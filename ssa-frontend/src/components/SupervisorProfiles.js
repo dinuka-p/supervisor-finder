@@ -15,7 +15,7 @@ function SupervisorProfiles() {
   const [filteredSupervisors, setFilteredSupervisors] = useState([{}]);
 
   useEffect(() => {
-      fetch("/supervisor-profiles").then(
+      fetch("/api/supervisor-profiles").then(
       res => res.json()
       ).then(
       data => {
@@ -26,7 +26,7 @@ function SupervisorProfiles() {
   }, [])
 
   useEffect(() => {
-    fetch("/supervisor-filters").then(
+    fetch("/api/supervisor-filters").then(
     res => res.json()
     ).then(
     data => {
@@ -68,33 +68,8 @@ function SupervisorProfiles() {
     navigate(`/supervisor-profile/${selectedSupervisorID}`);
   };
 
-  // const handleDownloadClick = () => {
-  //   fetch("/download-supervisor-table")
-  //     .then((response) => {
-  //       if (response.ok) {
-  //         const filename = response.headers.get('Content-Disposition')
-  //           .split('filename=')[1]
-  //           .replace(/"/g, '');
-  //         return { blob: response.blob(), filename };
-  //       } else {
-  //         throw new Error("Failed to download file");
-  //       }
-  //     })
-  //     .then(({ blob, filename }) => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const a = document.createElement("a");
-  //       a.href = url;
-  //       a.download = filename; 
-  //       document.body.appendChild(a);
-  //       a.click();
-  //       document.body.removeChild(a);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // };
   const handleDownloadClick = () => {
-    fetch("/download-supervisor-table")
+    fetch("/api/download-supervisor-table")
       .then((response) => {
         if (response.ok) {
           return response.blob();

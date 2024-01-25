@@ -28,7 +28,7 @@ def index():
     #code for dashboard
     return "todo"
 
-@app.route("/supervisor-profiles", methods=["GET"])
+@app.route("/api/supervisor-profiles", methods=["GET"])
 def display_profiles():
     supervisors = Supervisors.query.all()
     output = []
@@ -37,7 +37,7 @@ def display_profiles():
         output.append(supervisor_data)
     return jsonify({"supervisors": output})
 
-@app.route("/supervisor-filters", methods=["GET"]) 
+@app.route("/api/supervisor-filters", methods=["GET"]) 
 def display_filters():
     supervisors = Supervisors.query.all()
     output = []
@@ -51,7 +51,7 @@ def display_filters():
         output.append(item)
     return jsonify({"allFilters": output})
 
-@app.route("/supervisor-details/<int:id>", methods=["GET"])
+@app.route("/api/supervisor-details/<int:id>", methods=["GET"])
 def display_supervisor_details(id):
     supervisor = Supervisors.query.get(id)
     filter_list = []
@@ -72,7 +72,7 @@ def display_supervisor_details(id):
     else:
         return jsonify({"error": "Supervisor not found"}), 404
     
-@app.route("/download-supervisor-table")
+@app.route("/api/download-supervisor-table")
 def download_supervisor_table():
     query = Supervisors.query.with_entities(Supervisors.supervisorName, Supervisors.supervisorEmail, Supervisors.project_keywords, Supervisors.filter_words, Supervisors.preferred_contact, Supervisors.location).all()
     data = [dict(zip(Supervisors.__table__.columns.keys()[1:], row)) for row in query]    
@@ -90,4 +90,4 @@ def download_supervisor_table():
     return response
 
 if __name__ == "__main__":
-    app.run(debug=False) #changes are updated immediately - set to False once in production
+    app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
