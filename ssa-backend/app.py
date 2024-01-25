@@ -5,11 +5,12 @@ from flask import Flask, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 from io import BytesIO
-import yaml
 from gevent.pywsgi import WSGIServer
+from config import config
+
 
 app = Flask(__name__)
-mysqlDB = yaml.load(open("db.yaml"), Loader=yaml.FullLoader)
+mysqlDB = config
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
 db = SQLAlchemy(app)
