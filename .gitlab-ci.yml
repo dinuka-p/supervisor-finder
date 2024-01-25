@@ -5,76 +5,41 @@ variables:
 
 stages:          # List of stages for jobs, and their order of execution
   - build
-  - test
-  - release
   - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
+build-frontend:
+  # Official docker image.
+  image: docker:latest
   stage: build
-  script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
-    - mkdir build/
-    - echo "my application binary file" > build/executable-binary-file-v1
-  artifacts:
-    paths:
-      - build/executable-binary-file-v1
-    expire_in: 1 week
-
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - echo "Code coverage is 90%"
-    - cat $CI_PROJECT_DIR/build/executable-binary-file-v1
-
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - echo "No lint issues found."
-
-docker-build-main:
-  # Official docker image.
-  image: docker:latest
-  stage: release
-  services:
-   - name: docker:dind
-
-  variables:
-    #DOCKER_HOST: 'tcp://docker:2375/'
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-
-  before_script:
-    - apk add nmap
-    - nmap -sT -p- docker
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
-  only:
-     - main
-
-docker-build:
-  # Official docker image.
-  image: docker:latest
-  stage: release
   services:
     - docker:dind
 
-  variables:
-    #DOCKER_HOST: 'tcp://docker:2375/'
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
+  # variables:
+  #   #DOCKER_HOST: 'tcp://docker:2375/'
+  #   DOCKER_DRIVER: overlay2
+  #   DOCKER_TLS_CERTDIR: ""
 
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  # before_script:
+  #   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHA"
-  except:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:frontend" ssa-frontend
+    - docker push "$CI_REGISTRY_IMAGE:frontend"
+  only:
     - main
+
+build-backend:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:backend" ssa-backend
+    - docker push "$CI_REGISTRY_IMAGE:backend"
+  only:
+    - main
+
 
 deploy-job:      # This job runs in the deploy stage.
   image: alpine:latest
@@ -82,7 +47,7 @@ deploy-job:      # This job runs in the deploy stage.
   when: on_success
   before_script:
     - chmod og= $SSH_PRIVATE_KEY
-    - apk update && apk add openssh-client python3
+    - apk update && apk add openssh-client python
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml down || true"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker rm -f $(docker ps -a -q) || true"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker volume rm $(docker volume ls -q) || true"
@@ -90,9 +55,9 @@ deploy-job:      # This job runs in the deploy stage.
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker pull ${CI_REGISTRY_IMAGE}:latest"
   script: 
-    - scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY -r . $VM_USER@$VM:~/fyp-deployment
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i '5s|teamproject|$CI_IMG|’ ~/$CI_PROJECT_DIR/docker-compose.yml" 
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml up -d"
+      - scp -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY -r . $VM_USER@$VM:~/$CI_PROJECT_DIR
+      - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i '5s|teamproject|$CI_IMG|’ ~/$CI_PROJECT_DIR/docker-compose.yml" 
+      - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/$CI_PROJECT_DIR/docker-compose.yml up -d"
   environment:
     name: production
   only:
