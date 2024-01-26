@@ -94,9 +94,9 @@ def download_supervisor_table():
     response.headers['Content-Disposition'] = 'attachment; filename="supervisors.xlsx"'
     return response
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
 
-http_server = WSGIServer(("0.0.0.0", 8088), app)
-print('starting...', flush=True)
-http_server.serve_forever()
+    http_server = WSGIServer(("0.0.0.0", 8088), app)
+    print('starting...', flush=True)
+    http_server.serve_forever()

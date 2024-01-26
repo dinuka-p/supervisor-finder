@@ -16,12 +16,15 @@ services:
     restart: always
     environment:
       DB_PW: "${MYSQL_ROOT_PASSWORD}"
+      DB_HOST: db
 
 
   db:
     image: mysql:5.7
     volumes:
       - db_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
