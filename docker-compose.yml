@@ -1,54 +1,44 @@
 version: '3.7'
 
 services:
- frontend:
-    image: node:14
-    container_name: frontend
-    volumes:
-      - .:/app
-      - /app/node_modules
-    working_dir: /app
-    command: sh -c "npm install && npm run build"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    networks:
-      - frontend_network
-
- backend:
-    image: python:3.8-slim
-    container_name: backend
-    volumes:
-      - .:/app
-      - /app/node_modules
-    working_dir: /app
-    command: sh -c "pip install --trusted-host pypi.python.org -r requirements.txt && python run.py"
+  frontend:
+    image: projectimage:frontend
+    build: ssa-frontend
     ports:
-      - 5000:5000
-    depends_on:
-      - db
-    environment:
-      - FLASK_APP=run.py
-      - FLASK_ENV=development
-      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DB}
-    networks:
-      - frontend_network
+      - "3001:80"
+    restart: always
 
- db:
-    image: mysql:5.7
-    container_name: db
-    volumes:
-      - db_data:/var/lib/mysql
+  backend:
+    image: projectimage:backend
+    build: ssa-backend
+    ports:
+      - "5001:5000"
     restart: always
     environment:
-      MYSQL_DATABASE: ${MYSQL_DB}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    networks:
-      - frontend_network
+      DB_PW: "${MYSQL_ROOT_PASSWORD}"
+      DB_HOST: db
+
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: supervisor_allocation_db
+    # networks:
+    #   - app_network
+
+secrets:
+  mysql_password:
+    file: ./secrets/mysql_password.txt
 
 volumes:
  db_data:
 
-networks:
- frontend_network:
-    driver: bridge
+# networks:
+#  app_network:
+#     driver: bridge

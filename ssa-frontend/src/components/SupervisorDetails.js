@@ -7,7 +7,7 @@ function SupervisorDetails() {
     const [supervisorData, setSupervisorData] = useState(null)
 
     useEffect(() => {
-        fetch(`/supervisor-details/${id}`).then(
+        fetch(`/api/supervisor-details/${id}`).then(
         res => res.json()
         ).then(
         data => {

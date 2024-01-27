@@ -1,4 +1,0 @@
-mysql_host: 'localhost'
-mysql_user: 'root'
-mysql_password: '!mYSqlPW'
-mysql_db: 'supervisor_allocation_db'
