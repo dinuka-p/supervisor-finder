@@ -80,6 +80,7 @@
 
 .page-content {
   overflow: auto;
+  width: 100%;
 }
 
 .page-title {
@@ -211,24 +212,23 @@
   margin-left: 30px;
   margin-right: 30px;
   height: 30%;
+  width: 100%;
   padding: 20px;
 }
 
-.profile-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: cadetblue;
-  color: #ffffff;
+.profile-image-container {
   height: 100%;
-  width: 30%;
-  position: relative;
+}
+
+.profile-image {
+  height:inherit;
+  width: auto;
   border-radius: 10px;
 }
 
 .profile-card-details {
   text-align: left;
-  margin-left: 10%;
+  margin-left: 5%;
 }
 
 .profile-info {

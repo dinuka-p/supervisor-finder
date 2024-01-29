@@ -27,7 +27,9 @@ function SupervisorDetails() {
         
           <h1 className="page-title">{supervisorData.name}</h1>
             <div className="profile-card">
-                <div className="profile-image">Supervisor Image - TODO</div>
+                <div className="profile-image-container">
+                    <img className="profile-image" src="https://isobarscience-1bfd8.kxcdn.com/wp-content/uploads/2020/09/default-profile-picture1.jpg" alt={supervisorData.name} />
+                </div>
                 <div className="profile-card-details">
                     <h2>{supervisorData.name}</h2>
                     <p>{supervisorData.email}</p>
