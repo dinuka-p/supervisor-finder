@@ -20,9 +20,9 @@ class Supervisors(db.Model):
     supervisorID = db.Column(db.Integer, primary_key=True)
     supervisorName = db.Column(db.String(100), nullable=False)
     supervisorEmail = db.Column(db.String(200), nullable=False, unique=True)
-    project_keywords = db.Column(db.Text)
-    filter_words = db.Column(db.Text)
-    preferred_contact = db.Column(db.Text)
+    projectKeywords = db.Column(db.Text)
+    filterWords = db.Column(db.Text)
+    preferredContact = db.Column(db.Text)
     location = db.Column(db.String(50))
     def __repr__(self):
         return "<Name %r>" %self.supervisorName
@@ -38,7 +38,7 @@ def display_profiles():
     supervisors = Supervisors.query.all()
     output = []
     for supervisor in supervisors:
-        supervisor_data = {"id":supervisor.supervisorID,"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.project_keywords, "filter_words":supervisor.filter_words}
+        supervisor_data = {"id":supervisor.supervisorID,"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.projectKeywords, "filter_words":supervisor.filterWords}
         output.append(supervisor_data)
     return jsonify({"supervisors": output})
 
@@ -48,7 +48,7 @@ def display_filters():
     output = []
     filter_list = []
     for supervisor in supervisors:
-        unique_filters = supervisor.filter_words.split(",")
+        unique_filters = supervisor.filterWords.split(",")
         for filters in unique_filters:
             filter_list.append(filters)
     filter_list = list(set(filter_list))
@@ -61,16 +61,16 @@ def display_supervisor_details(id):
     supervisor = Supervisors.query.get(id)
     filter_list = []
     if supervisor:
-        unique_filters = supervisor.filter_words.split(",")
+        unique_filters = supervisor.filterWords.split(",")
         for filters in unique_filters:
             filter_list.append(filters)
         supervisor_data = {
             "id": supervisor.supervisorID,
             "name": supervisor.supervisorName,
             "email": supervisor.supervisorEmail,
-            "projects": supervisor.project_keywords,
+            "projects": supervisor.projectKeywords,
             "filter_words": filter_list,
-            "contact": supervisor.preferred_contact,
+            "contact": supervisor.preferredContact,
             "location": supervisor.location
         }
         return jsonify({"supervisor_info": supervisor_data})
@@ -79,7 +79,7 @@ def display_supervisor_details(id):
     
 @app.route("/api/download-supervisor-table")
 def download_supervisor_table():
-    query = Supervisors.query.with_entities(Supervisors.supervisorName, Supervisors.supervisorEmail, Supervisors.project_keywords, Supervisors.filter_words, Supervisors.preferred_contact, Supervisors.location).all()
+    query = Supervisors.query.with_entities(Supervisors.supervisorName, Supervisors.supervisorEmail, Supervisors.projectKeywords, Supervisors.filterWords, Supervisors.preferredContact, Supervisors.location).all()
     data = [dict(zip(Supervisors.__table__.columns.keys()[1:], row)) for row in query]    
     df = pd.DataFrame(data)
     output = BytesIO()
