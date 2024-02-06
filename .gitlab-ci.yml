@@ -45,7 +45,7 @@ mirror_to_github:
   script:
     - git clone --mirror $CI_REPOSITORY_URL
     - cd $(basename $CI_REPOSITORY_URL .git)
-    - git remote add github https://$GITHUB_TOKEN@github.com/dinuka-p/supervisor-allocation.git
+    - git remote add github https://$GITHUB_TOKEN@github.com/dinuka-p/supervisor-finder.git
     - git push --mirror github
   only:
     - main
