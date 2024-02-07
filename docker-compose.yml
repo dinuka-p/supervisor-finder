@@ -15,30 +15,12 @@ services:
       - "5001:5000"
     restart: always
     environment:
-      DB_PW: "${MYSQL_ROOT_PASSWORD}"
-      DB_HOST: db
+      DB_PW: "${DB_PW}"
+      DB_HOST: fyp-db.mysql.database.azure.com
+      DB_NAME: supervisor_finder_db
+      DB_USER: dinuka
 
-
-  db:
-    image: mysql:5.7
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "127.0.0.1:3306:3306"
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-      MYSQL_DATABASE: supervisor_allocation_db
-    # networks:
-    #   - app_network
 
 secrets:
-  mysql_password:
-    file: ./secrets/mysql_password.txt
-
-volumes:
- db_data:
-
-# networks:
-#  app_network:
-#     driver: bridge
+  db_password:
+    file: .env
