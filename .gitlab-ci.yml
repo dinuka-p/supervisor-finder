@@ -1,7 +1,5 @@
-image: python:3.8-slim
+image: alpine/git:latest
 
-variables:
-  GIT_STRATEGY: clone
 
 stages:         
   - mirror
@@ -10,9 +8,8 @@ stages:
 mirror_to_github:
   stage: mirror
   script:
-    - apt-get update -qy  # Update package list
-    - apt-get install -y git 
     - git remote add github https://$GITHUB_TOKEN@github.com/dinuka-p/supervisor-finder.git
+    - git checkout -b main 
     - git push github main
   only:
     - main
