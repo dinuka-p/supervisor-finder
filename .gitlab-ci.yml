@@ -4,41 +4,41 @@ variables:
   GIT_STRATEGY: clone
 
 stages:          # List of stages for jobs, and their order of execution
-  - build
+  # - build
   - mirror
-  - deploy
+  # - deploy
 
-build-frontend:
-  # Official docker image.
-  stage: build
-  image: 
-    name: gcr.io/kaniko-project/executor:v1.14.0-debug
-    entrypoint: [""]
-  script:
-    - cp $DOCKER_CONFIG /kaniko/config.json
-    - export DOCKER_CONFIG=/kaniko
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/ssa-frontend"
-      --cache=true
-      --destination "$CI_REGISTRY_IMAGE:frontend"
-  only:
-    - main
+# build-frontend:
+#   # Official docker image.
+#   stage: build
+#   image: 
+#     name: gcr.io/kaniko-project/executor:v1.14.0-debug
+#     entrypoint: [""]
+#   script:
+#     - cp $DOCKER_CONFIG /kaniko/config.json
+#     - export DOCKER_CONFIG=/kaniko
+#     - /kaniko/executor
+#       --context "${CI_PROJECT_DIR}/ssa-frontend"
+#       --cache=true
+#       --destination "$CI_REGISTRY_IMAGE:frontend"
+#   only:
+#     - main
 
-build-backend:
-  # Official docker image.
-  stage: build
-  image: 
-    name: gcr.io/kaniko-project/executor:v1.14.0-debug
-    entrypoint: [""]
-  script:
-    - cp $DOCKER_CONFIG /kaniko/config.json
-    - export DOCKER_CONFIG=/kaniko
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/ssa-backend"
-      --cache=true
-      --destination "$CI_REGISTRY_IMAGE:backend"
-  only:
-    - main
+# build-backend:
+#   # Official docker image.
+#   stage: build
+#   image: 
+#     name: gcr.io/kaniko-project/executor:v1.14.0-debug
+#     entrypoint: [""]
+#   script:
+#     - cp $DOCKER_CONFIG /kaniko/config.json
+#     - export DOCKER_CONFIG=/kaniko
+#     - /kaniko/executor
+#       --context "${CI_PROJECT_DIR}/ssa-backend"
+#       --cache=true
+#       --destination "$CI_REGISTRY_IMAGE:backend"
+#   only:
+#     - main
 
 mirror_to_github:
   stage: mirror
@@ -50,21 +50,21 @@ mirror_to_github:
   only:
     - main
 
-deploy-job:      # This job runs in the deploy stage.
-  image: alpine:latest
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  when: on_success
-  before_script:
-    - chmod og= $SSH_PRIVATE_KEY
-    - apk update && apk add openssh-client
-  script: 
-    - cat docker-compose.yml |ssh $VM_USER@$VM -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY "cat > ~/fyp-deployment/docker-compose.yml"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "echo MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} > ~/fyp-deployment/.env"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i 's|projectimage|$CI_REGISTRY_IMAGE|g' ~/fyp-deployment/docker-compose.yml" 
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml pull"
-    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml up -d --remove-orphans"
-  environment:
-    name: production 
-  only:
-    - main
+# deploy-job:      # This job runs in the deploy stage.
+#   image: alpine:latest
+#   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+#   when: on_success
+#   before_script:
+#     - chmod og= $SSH_PRIVATE_KEY
+#     - apk update && apk add openssh-client
+#   script: 
+#     - cat docker-compose.yml |ssh $VM_USER@$VM -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY "cat > ~/fyp-deployment/docker-compose.yml"
+#     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+#     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "echo MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} > ~/fyp-deployment/.env"
+#     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "sed -i 's|projectimage|$CI_REGISTRY_IMAGE|g' ~/fyp-deployment/docker-compose.yml" 
+#     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml pull"
+#     - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $VM_USER@$VM "docker compose -f ~/fyp-deployment/docker-compose.yml up -d --remove-orphans"
+#   environment:
+#     name: production 
+#   only:
+#     - main
