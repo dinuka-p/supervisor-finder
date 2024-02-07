@@ -19,8 +19,8 @@ function SupervisorProfiles() {
       res => res.json()
       ).then(
       data => {
-        setAllSupervisors(data.supervisors)
-        setFilteredSupervisors(data.supervisors.sort((a, b) => a.name.localeCompare(b.name)))
+          setAllSupervisors(data.supervisors)
+          setFilteredSupervisors(data.supervisors.sort((a, b) => a.name.localeCompare(b.name)))
       }
       )
   }, [])
