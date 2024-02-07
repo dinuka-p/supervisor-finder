@@ -1,4 +1,4 @@
-image: alpine/git:latest
+image: alpine:latest
 
 
 stages:         
@@ -8,6 +8,7 @@ stages:
 mirror_to_github:
   stage: mirror
   script:
+    - apk add --no-cache git
     - git remote add github https://$GITHUB_TOKEN@github.com/dinuka-p/supervisor-finder.git
     - git checkout -b main 
     - git push github main
