@@ -12,10 +12,6 @@ mirror_to_github:
   script:
     - apt-get update -qy  # Update package list
     - apt-get install -y git 
-    - git init
-    - git remote add origin $CI_REPOSITORY_URL
-    - git fetch origin $CI_COMMIT_SHA --depth=1
-    - git checkout -b main $CI_COMMIT_SHA  # Assuming you want to push to the main branch on GitHub
     - git remote add github https://$GITHUB_TOKEN@github.com/dinuka-p/supervisor-finder.git
     - git push github main
   only:
