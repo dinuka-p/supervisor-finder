@@ -7,11 +7,14 @@
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
   width: 30%;
   max-width: 250px;
   min-height: 100%;
   background-color: #014254;
   color: #f1f1f1;
+  justify-content: space-between;
 }
 
 .sidebar-heading {
@@ -76,6 +79,20 @@
   text-align: left;
   font-size: larger;
   font-weight: 500;
+}
+
+.auth-button {
+  margin: 45px 10px;
+  background-color: cadetblue;
+  border: none;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: large;
+  padding: 5px 15px;
+}
+
+.auth-button:hover {
+  color: #014254 ;
 }
 
 .page-content {
