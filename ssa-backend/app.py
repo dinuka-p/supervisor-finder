@@ -1,7 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 
-from flask import Flask, send_file, jsonify
+from flask import Flask, send_file, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 from io import BytesIO
@@ -26,6 +26,15 @@ class Supervisors(db.Model):
     location = db.Column(db.String(50))
     def __repr__(self):
         return "<Name %r>" %self.supervisorName
+    
+class Users(db.Model):
+    userID = db.Column(db.Integer, primary_key=True)
+    userName = db.Column(db.String(100), nullable=False)
+    userEmail = db.Column(db.String(200), nullable=False, unique=True)
+    userPassword = db.Column(db.Text)
+    userRole = db.Column(db.String(100))
+    def __repr__(self):
+        return "<Name %r>" %self.userName
      
 
 @app.route("/")
@@ -93,6 +102,12 @@ def download_supervisor_table():
     )
     response.headers['Content-Disposition'] = 'attachment; filename="supervisors.xlsx"'
     return response
+
+@app.route("/api/register", methods=["POST"])
+def register_user():
+    request_data = request.get_json()
+    return jsonify({"req": request_data})
+
 
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production

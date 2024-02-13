@@ -65,7 +65,7 @@ function SupervisorProfiles() {
   };
 
   const handleSupervisorClick = (selectedSupervisorID) => {
-    navigate(`/supervisor-profile/${selectedSupervisorID}`);
+    navigate(`/supervisor/${selectedSupervisorID}`);
   };
 
   const handleDownloadClick = () => {

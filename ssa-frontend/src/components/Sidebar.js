@@ -8,12 +8,12 @@ const SidebarData = [
     {
         title: "Supervisors",
         icon: <SchoolRoundedIcon fontSize="large"/>, 
-        link: "/supervisor-profiles",
+        link: "/",
     },
     {
         title: "Dashboard",
         icon: <DashboardRoundedIcon fontSize="large"/>, 
-        link: "/",
+        link: "/dashboard",
     },
     {
         title: "Profile",
@@ -47,8 +47,8 @@ function Sidebar() {
                 </div>
             </div>
             <div>
-                <button className="auth-button">Log In</button>
-                <button className="auth-button">Sign Up</button>
+                <button className="auth-button" onClick={()=>{window.location.pathname = "/login"}}>Log In</button>
+                <button className="auth-button" onClick={()=>{window.location.pathname = "/signup"}}>Sign Up</button>
             </div>
         </div>
     )

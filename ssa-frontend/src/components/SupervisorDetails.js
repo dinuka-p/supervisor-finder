@@ -38,7 +38,7 @@ function SupervisorDetails() {
         <div className="page-content">
             <div className="page-heading-container">
                 <h1 className="page-title">Supervisor Details</h1>
-                <button className="back-button" onClick={()=>{window.location.pathname = "/supervisor-profiles"}}> 
+                <button className="back-button" onClick={()=>{window.location.pathname = "/"}}> 
                     <WestRoundedIcon/>
                     <p className="back-button-text">Back to Supervisors</p>
                 </button>
