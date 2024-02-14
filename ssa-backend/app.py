@@ -3,13 +3,18 @@ monkey.patch_all()
 
 from flask import Flask, send_file, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 import pandas as pd
 from io import BytesIO
 from gevent.pywsgi import WSGIServer
 from config import config
+from flask_bcrypt import Bcrypt
+
 
 
 app = Flask(__name__)
+
+bcrypt = Bcrypt(app)
 mysqlDB = config
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
@@ -32,7 +37,7 @@ class Users(db.Model):
     userName = db.Column(db.String(100), nullable=False)
     userEmail = db.Column(db.String(200), nullable=False, unique=True)
     userPassword = db.Column(db.Text)
-    userRole = db.Column(db.String(100))
+    userRole = db.Column(db.String(60))
     def __repr__(self):
         return "<Name %r>" %self.userName
      
@@ -106,12 +111,35 @@ def download_supervisor_table():
 @app.route("/api/register", methods=["POST"])
 def register_user():
     request_data = request.get_json()
-    return jsonify({"req": request_data})
+    msg = 500
+    email = request_data["email"]
+    
+    role = request_data["role"]
+    name = request_data["name"]
+    cursor = db.session.connection()
+    query = text("SELECT * FROM Users WHERE userEmail = :email")
+    account = cursor.execute(query, {"email": email}).fetchone()
+    if account:
+        response = 409
+        return jsonify({"response": response})
+    else:
+        password = request_data["password"]
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        newUser = Users(userEmail=email,
+                userPassword=hashed_password,
+                userRole=role,
+                userName=name)
+        db.session.add(newUser)
+        db.session.commit()
+        response = 200
+    cursor.close()
+    return jsonify({"response": response})
 
 
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
 
     http_server = WSGIServer(("0.0.0.0", 8088), app)
-    print('starting...', flush=True)
+    print("starting...", flush=True)
     http_server.serve_forever()

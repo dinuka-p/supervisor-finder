@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useDebugValue } from "react";
+import { useRef, useState, useEffect } from "react";
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { NavLink } from "react-router-dom";
@@ -40,7 +40,6 @@ const SignUp = () => {
     useEffect(() => {
         const result = EMAIL_REGEX.test(email);
         setValidEmail(result);
-        console.log(email, validEmail);
     }, [email])
 
     useEffect(() => {
@@ -52,7 +51,7 @@ const SignUp = () => {
 
     useEffect(() => {
         setErrorMessage("");
-    }, [email], password, matchPassword)
+    }, [email, password, matchPassword])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -69,26 +68,28 @@ const SignUp = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, role, name }),
                 credentials: "include",
             });
     
             const data = await response.json();
+            
+            if (data.response == 409) {
+                setErrorMessage("Email already registered")
+                errorRef.current.focus();
+            }
+            else {
+                setSuccess(true)
+                setName("");
+                setEmail("");
+                setPassword("");
+                setMatchPassword("");
+            }
     
-            console.log(data);
-            console.log(data?.accessToken);
-            console.log(JSON.stringify(data));
-            setSuccess(true);
-    
-            setName("");
-            setEmail("");
-            setPassword("");
-            setMatchPassword("");
+            
         } catch (err) {
             if (!err?.response) {
                 setErrorMessage("No Server Response");
-            } else if (err.response?.status === 409) {
-                setErrorMessage("Username Taken");
             } else {
                 setErrorMessage("Registration Failed");
             }
@@ -99,19 +100,19 @@ const SignUp = () => {
 
     return (
         <div className="page-content">
-            <>
-            <div className="auth-container">
+        <>
+        <div className="auth-container">
             {success ? (
                 <section className="auth-form">
                     <h1>Success!</h1>
                     <p>
-                        <a href="/login">Sign In</a>
+                        <a className="auth-form-link" href="/login">Sign In</a>
                     </p>
                 </section>
             ) : (
-            <section className="auth-form">
+            <section className="signup-form">
                 <p ref={errorRef} className={errorMessage ? "errormessage" : "offscreen"}>{errorMessage}</p>
-                <h1>Sign Up</h1>
+                <h1 style={{marginBottom: '0px'}}>Sign Up</h1>
                 <form onSubmit={handleSubmit}>
                 <div className="auth-label-input">
                     <label className="auth-label" htmlFor="name">
@@ -153,7 +154,7 @@ const SignUp = () => {
                 </div>
 
                 <div className="auth-label-input">
-                    <p className="auth-label-roles">*Select Group:</p>
+                    <p className="auth-roles-title">*Select Group:</p>
                     <div className="auth-roles">
                         <input 
                             className="auth-roles-radio"
@@ -164,7 +165,7 @@ const SignUp = () => {
                             checked={role === "Student"}
                             onChange={(e) => setRole(e.target.value)}
                         />
-                        <label htmlFor="student">Student</label>
+                        <label className="auth-roles-label" htmlFor="student">Student</label>
 
                         <input
                             className="auth-roles-radio"
@@ -175,7 +176,7 @@ const SignUp = () => {
                             checked={role === "Supervisor"}
                             onChange={(e) => setRole(e.target.value)}
                         />
-                        <label htmlFor="supervisor">Supervisor</label>
+                        <label className="auth-roles-label" htmlFor="supervisor">Supervisor</label>
 
                         <input
                             className="auth-roles-radio"
@@ -186,7 +187,7 @@ const SignUp = () => {
                             checked={role === "Guest"}
                             onChange={(e) => setRole(e.target.value)}
                         />
-                        <label htmlFor="guest">Guest</label>
+                        <label className="auth-roles-label" htmlFor="guest">Guest</label>
                     </div>
                 </div>
 
@@ -239,13 +240,13 @@ const SignUp = () => {
                         Passwords must match.
                     </p>
                 </div>
-                <button disabled={!name || !validEmail || !validPassword || !validMatch ? true : false}>
+                <button className="auth-submit" disabled={!name || !validEmail || !validPassword || !validMatch ? true : false}>
                     Sign Up
                 </button>
                 </form>
-                <p>
+                <p style={{marginTop: '0px'}}>
                     Already registered?  
-                    <NavLink path="/login">Sign in here</NavLink>
+                    <NavLink className="auth-form-link" path="/login" style={{marginLeft: '5px'}}>Sign in here</NavLink>
                 </p>
             </section>
             )}
