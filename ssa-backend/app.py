@@ -9,16 +9,20 @@ from io import BytesIO
 from gevent.pywsgi import WSGIServer
 from config import config
 from flask_bcrypt import Bcrypt
-
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 
 app = Flask(__name__)
 
-bcrypt = Bcrypt(app)
-mysqlDB = config
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=config["mysql_user"], password=config["mysql_password"], host=config["mysql_host"], db=config["mysql_db"])
+app.secret_key = config["secret_key"]
 
 db = SQLAlchemy(app)
+
+bcrypt = Bcrypt(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
 class Supervisors(db.Model):
@@ -32,15 +36,22 @@ class Supervisors(db.Model):
     def __repr__(self):
         return "<Name %r>" %self.supervisorName
     
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     userID = db.Column(db.Integer, primary_key=True)
     userName = db.Column(db.String(100), nullable=False)
     userEmail = db.Column(db.String(200), nullable=False, unique=True)
     userPassword = db.Column(db.Text)
     userRole = db.Column(db.String(60))
+
+    def get_id(self):
+        return str(self.userID)
+    
     def __repr__(self):
         return "<Name %r>" %self.userName
-     
+    
+@login_manager.user_loader
+def user_loader(user_id):
+    return Users.query.get(int(user_id))
 
 @app.route("/")
 def index():
@@ -111,7 +122,6 @@ def download_supervisor_table():
 @app.route("/api/register", methods=["POST"])
 def register_user():
     request_data = request.get_json()
-    msg = 500
     email = request_data["email"]
     
     role = request_data["role"]
@@ -120,8 +130,7 @@ def register_user():
     query = text("SELECT * FROM Users WHERE userEmail = :email")
     account = cursor.execute(query, {"email": email}).fetchone()
     if account:
-        response = 409
-        return jsonify({"response": response})
+        return jsonify({"response": 409})
     else:
         password = request_data["password"]
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -132,10 +141,21 @@ def register_user():
                 userName=name)
         db.session.add(newUser)
         db.session.commit()
-        response = 200
     cursor.close()
-    return jsonify({"response": response})
+    return jsonify({"response": 200})
 
+@app.route("/api/login", methods=["POST"])
+def login():
+    request_data = request.get_json()
+    email = request_data["email"]
+    password = request_data["password"]
+
+    user = Users.query.filter_by(userEmail=email).first()
+    if user and bcrypt.check_password_hash(user.userPassword, password):
+        login_user(user)
+        return jsonify({"response": 200})
+    else:
+        return jsonify({"response": 401})
 
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production

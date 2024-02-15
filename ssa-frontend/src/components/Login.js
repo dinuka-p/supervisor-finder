@@ -23,7 +23,38 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(email, password);
-        setSuccess(true);
+
+        try {
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+                credentials: "include",
+            });
+    
+            const data = await response.json();
+            
+            if (data.response == 401) {
+                setErrorMessage("Incorrect email or password")
+                errorRef.current.focus();
+            }
+            else {
+                setSuccess(true)
+                setEmail("");
+                setPassword("");
+            }
+    
+            
+        } catch (err) {
+            if (!err?.response) {
+                setErrorMessage("No Server Response");
+            } else {
+                setErrorMessage("Registration Failed");
+            }
+            errorRef.current.focus();
+        }
     }
 
     return (
