@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {FaSearch} from "react-icons/fa"
 import {motion} from "framer-motion"
 
-function SupervisorProfiles() {
+function SupervisorProfiles(props) {
   const navigate = useNavigate();
   const [allSupervisors, setAllSupervisors] = useState([{}]);
 
@@ -65,7 +65,7 @@ function SupervisorProfiles() {
   };
 
   const handleSupervisorClick = (selectedSupervisorID) => {
-    navigate(`/supervisor-profile/${selectedSupervisorID}`);
+    navigate(`/supervisor/${selectedSupervisorID}`);
   };
 
   const handleDownloadClick = () => {

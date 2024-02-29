@@ -1,18 +1,28 @@
 from gevent import monkey
 monkey.patch_all()
 
+import json
+from flask import Flask, send_file, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
+
+from datetime import datetime, timedelta, timezone
+import pandas as pd
+from io import BytesIO
+from gevent.pywsgi import WSGIServer
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import Flask, send_file, jsonify
-from flask_sqlalchemy import SQLAlchemy
-import pandas as pd
-from io import BytesIO
-from gevent.pywsgi import WSGIServer
-from flask_cors import CORS
-#from config import config - for dev
 
+from flask_cors import CORS
+
+
+from config import config
+from models import db, Supervisors, Users
 
 DB_SERVER = 'fyp-db.mysql.database.azure.com'
 DB_USER = 'dinuka'
@@ -20,31 +30,31 @@ DB_PASSWORD = os.getenv('DB_PW')
 DB_NAME = 'supervisor_finder_db'
 
 app = Flask(__name__)
+
 #for dev
 #mysqlDB = config
 #app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
+app.secret_key = config["secret_key"]
 
-db = SQLAlchemy(app)
+db.init_app(app)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+jwt = JWTManager(app)
+bcrypt = Bcrypt(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
-class Supervisors(db.Model):
-    supervisorID = db.Column(db.Integer, primary_key=True)
-    supervisorName = db.Column(db.String(100), nullable=False)
-    supervisorEmail = db.Column(db.String(200), nullable=False, unique=True)
-    projectKeywords = db.Column(db.Text)
-    filterWords = db.Column(db.Text)
-    preferredContact = db.Column(db.Text)
-    location = db.Column(db.String(50))
-    def __repr__(self):
-        return "<Name %r>" %self.supervisorName
-     
+    
+@login_manager.user_loader
+def user_loader(user_id):
+    return Users.query.get(int(user_id))
 
 @app.route("/")
 def index():
-    #code for dashboard
-    return "todo"
+    return "Hello World! This is the backend"
 
 @app.route("/api/supervisor-profiles", methods=["GET"])
 def display_profiles():
@@ -107,9 +117,84 @@ def download_supervisor_table():
     response.headers['Content-Disposition'] = 'attachment; filename="supervisors.xlsx"'
     return response
 
+@app.route("/api/register", methods=["POST"])
+def register_user():
+    request_data = request.get_json()
+    email = request_data["email"]
+    
+    role = request_data["role"]
+    name = request_data["name"]
+    cursor = db.session.connection()
+    query = text("SELECT * FROM Users WHERE userEmail = :email")
+    account = cursor.execute(query, {"email": email}).fetchone()
+    if account:
+        return jsonify({"response": 409})
+    else:
+        password = request_data["password"]
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        newUser = Users(userEmail=email,
+                userPassword=hashed_password,
+                userRole=role,
+                userName=name)
+        db.session.add(newUser)
+        db.session.commit()
+    cursor.close()
+    return jsonify({"response": 200})
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    request_data = request.get_json()
+    email = request_data["email"]
+    password = request_data["password"]
+
+    user = Users.query.filter_by(userEmail=email).first()
+    if user and bcrypt.check_password_hash(user.userPassword, password):
+        login_user(user)
+        accessToken = create_access_token(identity=email)
+        return jsonify({"response": 200, "role": user.userRole, "accessToken": accessToken})
+    else:
+        return jsonify({"response": 401})
+
+@app.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            accessToken = create_access_token(identity = get_jwt_identity())
+            data = response.get_json()
+            if type(data) is dict:
+                data["access_token"] = accessToken 
+                response.data = json.dumps(data)
+        return response
+    except (RuntimeError, KeyError):
+        #return original response if not valid JWT
+        return response
+    
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    response = jsonify({"response": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
+ 
+@app.route('/api/user-profile/<getemail>')
+@jwt_required() 
+def my_profile(getemail):
+    if not getemail:
+        return jsonify({"error": "Unauthorized Access"}), 401
+    user = Users.query.filter_by(userEmail=getemail).first()
+    response_body = {
+        "id": user.userID,
+        "name": user.userName,
+        "email": user.userEmail
+    }
+    return response_body
+
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
 
     http_server = WSGIServer(("0.0.0.0", 8088), app)
-    print('starting...', flush=True)
+    print("starting...", flush=True)
     http_server.serve_forever()
