@@ -20,6 +20,22 @@ class Supervisors(db.Model):
     def __repr__(self):
         return "<Name %r>" %self.supervisorName
     
+class ActiveSupervisors(db.Model):
+    __tablename__ = "ActiveSupervisors"
+    supervisorID = db.Column(db.Integer, primary_key=True)
+    supervisorName = db.Column(db.String(100), nullable=False)
+    supervisorEmail = db.Column(db.String(200), nullable=False, unique=True)
+    preferredContact = db.Column(db.Text)
+    location = db.Column(db.String(50))
+    officeHours = db.Column(db.String(100))
+    bookingLink = db.Column(db.String(80))
+    bio = db.Column(db.Text)
+    projectExamples = db.Column(db.Text)
+    filterWords = db.Column(db.Text)
+    capacity = db.Column(db.Integer) 
+    def __repr__(self):
+        return "<Name %r>" %self.supervisorName
+    
 class Users(UserMixin, db.Model):
     userID = db.Column(db.Integer, primary_key=True)
     userName = db.Column(db.String(100), nullable=False)

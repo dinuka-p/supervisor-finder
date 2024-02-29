@@ -4,6 +4,7 @@ import "../App.css"
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import { useAuth } from  '../context/AuthProvider'
 
 const SidebarData = [
     {
@@ -25,6 +26,11 @@ const SidebarData = [
 
 function Sidebar() {
     const location = useLocation();
+    const { auth, setAuth } = useAuth();
+
+    const handleLogout = () => {
+        setAuth({});
+    }
 
     return (
         <div className = "sidebar">
@@ -50,10 +56,16 @@ function Sidebar() {
                     </ul>
                 </div>
             </div>
-            <div className="sidebar-links">
-                <Link to="/login" className="auth-button">Log In</Link>
-                <Link to="/signup" className="auth-button">Sign Up</Link>
-            </div>
+            
+            {!auth.accessToken && (
+                <div className="sidebar-links">
+                    <Link to="/login" className="auth-button">Log In</Link>
+                    <Link to="/signup" className="auth-button">Sign Up</Link>
+                </div>)}
+              {auth.accessToken && (
+                <div className="sidebar-links">
+                    <button onClick={handleLogout} className="auth-button">Log Out</button>
+                </div>)}
         </div>
     )
 }

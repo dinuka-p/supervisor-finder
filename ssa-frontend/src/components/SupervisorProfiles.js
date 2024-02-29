@@ -3,8 +3,10 @@ import "../App.css"
 import { useNavigate } from "react-router-dom";
 import {FaSearch} from "react-icons/fa"
 import {motion} from "framer-motion"
+import { useAuth } from "../context/AuthProvider";
 
-function SupervisorProfiles(props) {
+function SupervisorProfiles() {
+  const { auth } = useAuth();
   const navigate = useNavigate();
   const [allSupervisors, setAllSupervisors] = useState([{}]);
 
@@ -15,6 +17,7 @@ function SupervisorProfiles(props) {
   const [filteredSupervisors, setFilteredSupervisors] = useState([{}]);
 
   useEffect(() => {
+    if (!auth.accessToken) {
       fetch("/api/supervisor-profiles").then(
       res => res.json()
       ).then(
@@ -23,6 +26,16 @@ function SupervisorProfiles(props) {
         setFilteredSupervisors(data.supervisors.sort((a, b) => a.name.localeCompare(b.name)))
       }
       )
+    } else {
+      fetch("/api/active-supervisor-profiles").then(
+        res => res.json()
+        ).then(
+        data => {
+          setAllSupervisors(data.supervisors)
+          setFilteredSupervisors(data.supervisors.sort((a, b) => a.name.localeCompare(b.name)))
+        }
+        )
+    }
   }, [])
 
   useEffect(() => {

@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react"
 import "../App.css"
+import { useAuth } from  '../context/AuthProvider'
 
-function UserProfile(props) {
+function UserProfile() {
 
+  const { auth, setAuth } = useAuth();
   const [profileData, setProfileData] = useState(null);
-  const email = localStorage.getItem('email');
 
   useEffect(() => {
-    fetch(`/api/user-profile/${email}`, {
+    fetch(`/api/user-profile/${auth.email}`, {
       method: "GET",
       headers: {
-          "Authorization": "Bearer " + props.token,
+          "Authorization": "Bearer " + auth.accessToken,
       },
     }).then(
       res => res.json()
       ).then(
       data => {
-        data.accessToken && props.setToken(data.accessToken)
-        console.log();
           setProfileData(({
             profileName: data.name,
             profileEmail: data.email}))
@@ -25,9 +24,16 @@ function UserProfile(props) {
       )
   }, [])
 
+  const handleLogout = () => {
+    setAuth({});
+  }
+
     return (
-        <div>
-          <h1 className="page-title">Your Profile</h1>
+        <div className="page-content">
+          <div className="page-heading-container">
+                <h1 className="page-title">Your Profile</h1>
+                <button onClick={handleLogout} className="logout-button">Log Out</button>
+            </div>
           {profileData && (
             <>
               <p>{profileData.profileName}</p>

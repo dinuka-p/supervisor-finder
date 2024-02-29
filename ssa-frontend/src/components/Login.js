@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "../App.css"
-import AuthContext from "../context/AuthProvider";
+import { useAuth } from "../context/AuthProvider";
 
 function Login(props) {
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
     const userRef = useRef();
     const errorRef = useRef();
 
@@ -42,12 +42,13 @@ function Login(props) {
                 errorRef.current.focus();
             }
             else {
+                const name = data.name;
                 const role  = data.role;
                 const accessToken = data.accessToken;
                 props.setToken(data.accessToken);
                 localStorage.setItem('email', email)
-                setAuth({ email, password, role, accessToken });
-                setSuccess(true)
+                setAuth({ email, name, role, accessToken });
+                setSuccess(true);
                 setEmail("");
                 setPassword("");
             }

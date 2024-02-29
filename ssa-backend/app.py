@@ -4,6 +4,7 @@ monkey.patch_all()
 import json
 from flask import Flask, send_file, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 from datetime import datetime, timedelta, timezone
 import pandas as pd
@@ -22,20 +23,20 @@ from flask_cors import CORS
 
 
 from config import config
-from models import db, Supervisors, Users
+from models import db, Supervisors, Users, ActiveSupervisors
 
-DB_SERVER = 'fyp-db.mysql.database.azure.com'
-DB_USER = 'dinuka'
-DB_PASSWORD = os.getenv('DB_PW')
-DB_NAME = 'supervisor_finder_db'
+# DB_SERVER = 'fyp-db.mysql.database.azure.com'
+# DB_USER = 'dinuka'
+# DB_PASSWORD = os.getenv('DB_PW')
+# DB_NAME = 'supervisor_finder_db'
 
 app = Flask(__name__)
 
 #for dev
-#mysqlDB = config
-#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
+mysqlDB = config
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
+#app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
 app.secret_key = config["secret_key"]
 
 db.init_app(app)
@@ -46,6 +47,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+#when i create new tables, run these commands
+# with app.app_context():
+#     db.create_all()
 
     
 @login_manager.user_loader
@@ -62,6 +66,15 @@ def display_profiles():
     output = []
     for supervisor in supervisors:
         supervisor_data = {"id":supervisor.supervisorID,"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.projectKeywords, "filter_words":supervisor.filterWords}
+        output.append(supervisor_data)
+    return jsonify({"supervisors": output})
+
+@app.route("/api/active-supervisor-profiles", methods=["GET"])
+def display_active_profiles():
+    supervisors = ActiveSupervisors.query.all()
+    output = []
+    for supervisor in supervisors:
+        supervisor_data = {"id":supervisor.supervisorID,"name": supervisor.supervisorName, "email": supervisor.supervisorEmail, "projects":supervisor.bio, "filter_words":supervisor.filterWords}
         output.append(supervisor_data)
     return jsonify({"supervisors": output})
 
@@ -133,10 +146,26 @@ def register_user():
         password = request_data["password"]
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
+        #if user is a supervisor add to active supervisor table
+        if role == "Supervisor":
+            activeSupervisor = ActiveSupervisors(supervisorEmail=email,
+                            supervisorName=name, 
+                            preferredContact= "", 
+                            location= "", 
+                            officeHours= "", 
+                            bookingLink= "", 
+                            bio= "", 
+                            projectExamples= "", 
+                            filterWords= "", 
+                            capacity= 0)
+            db.session.add(activeSupervisor)
+            db.session.commit()
+        
+        #all users added to user table (for password storing)
         newUser = Users(userEmail=email,
-                userPassword=hashed_password,
-                userRole=role,
-                userName=name)
+                        userPassword=hashed_password,
+                        userRole=role,
+                        userName=name)
         db.session.add(newUser)
         db.session.commit()
     cursor.close()
@@ -152,7 +181,7 @@ def login():
     if user and bcrypt.check_password_hash(user.userPassword, password):
         login_user(user)
         accessToken = create_access_token(identity=email)
-        return jsonify({"response": 200, "role": user.userRole, "accessToken": accessToken})
+        return jsonify({"response": 200, "name":user.userName, "role": user.userRole, "accessToken": accessToken})
     else:
         return jsonify({"response": 401})
 

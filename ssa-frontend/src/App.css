@@ -9,8 +9,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 30%;
-  max-width: 250px;
+  min-width: 240px;
   min-height: 100%;
   background-color: #014254;
   color: #f1f1f1;
@@ -49,7 +48,7 @@
 
 .sidebar-row {
   width: 80%;
-  height: 65px;
+  height: 55px;
   margin: 10px 0;
   list-style-type: none;
   display: flex;
@@ -68,7 +67,7 @@
   height: 100%;
   width: 85%;
   font-size: large;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .sidebar-nav:hover {
@@ -103,13 +102,24 @@
 }
 
 .auth-button {
-  margin: 45px 10px;
+  margin: 0px 10px;
   background-color: cadetblue;
   border: none;
   color: #ffffff;
   border-radius: 10px;
   font-size: large;
   padding: 5px 15px;
+}
+
+.logout-button {
+  margin: 0px 30px;
+  background-color: cadetblue;
+  border: none;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: large;
+  padding: 5px 15px;
+  margin-top: 35px;
 }
 
 .auth-button:hover {
@@ -262,6 +272,8 @@
   margin-right: 40px;
   margin-top: 40px;
   margin-bottom: 20px;
+  padding-top: 10px;
+  background-color: #f1f1f1;
 }
 
 .back-button:hover {

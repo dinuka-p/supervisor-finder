@@ -72,12 +72,30 @@ const SignUp = () => {
             });
     
             const data = await response.json();
-            
+            console.log(role);
             if (data.response == 409) {
                 setErrorMessage("Email already registered")
                 errorRef.current.focus();
             }
             else {
+                try {
+                    const response = await fetch("/api/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email, password }),
+                        credentials: "include",
+                    });
+                    
+                } catch (err) {
+                    if (!err?.response) {
+                        setErrorMessage("No Server Response");
+                    } else {
+                        setErrorMessage("Login Failed");
+                    }
+                    errorRef.current.focus();
+                }
                 setSuccess(true)
                 setName("");
                 setEmail("");
