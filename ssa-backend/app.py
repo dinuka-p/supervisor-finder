@@ -3,6 +3,7 @@ monkey.patch_all()
 
 import json
 from flask import Flask, send_file, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime, timedelta, timezone
 import pandas as pd
@@ -12,12 +13,29 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+
+from flask_cors import CORS
+
+
 from config import config
 from models import db, Supervisors, Users
 
+DB_SERVER = 'fyp-db.mysql.database.azure.com'
+DB_USER = 'dinuka'
+DB_PASSWORD = os.getenv('DB_PW')
+DB_NAME = 'supervisor_finder_db'
+
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=config["mysql_user"], password=config["mysql_password"], host=config["mysql_host"], db=config["mysql_db"])
+#for dev
+#mysqlDB = config
+#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
 app.secret_key = config["secret_key"]
 
 db.init_app(app)
