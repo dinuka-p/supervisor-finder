@@ -47,25 +47,42 @@
   align-items: center;
 }
 
-.sidebar-items .sidebar-row {
+.sidebar-row {
   width: 80%;
   height: 65px;
   margin: 10px 0;
   list-style-type: none;
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+  color: #f1f1f1;
 }
 
-.sidebar-items .sidebar-row:hover {
+.sidebar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  color: #f1f1f1;
+  text-decoration: none;
+  height: 100%;
+  width: 85%;
+  font-size: large;
+  font-weight: 500;
+}
+
+.sidebar-nav:hover {
   color:cadetblue ;
 }
 
-.sidebar-items #active {
+.sidebar-nav-div {
+  margin-left: 13px;
+}
+
+.sidebar-row  #active {
   background-color: #f1f1f1;
   color: #014254;
   border-radius: 10px;
-  width: 85%;
 }
 
 .sidebar-row #icon {
@@ -452,4 +469,11 @@ form {
   padding: 7px 0;
   border-radius: 10px;
   border: none;
+  color: #f1f1f1;
+  background-color: #014254;
+}
+
+.auth-submit:hover {
+  color: #014254;
+  background-color: #f1f1f1;
 }

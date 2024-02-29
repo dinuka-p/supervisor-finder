@@ -1,9 +1,10 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import "../App.css"
+import AuthContext from "../context/AuthProvider";
 
-const Login = () => {
-
+function Login(props) {
+    const { setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errorRef = useRef();
 
@@ -22,7 +23,6 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(email, password);
 
         try {
             const response = await fetch("/api/login", {
@@ -35,12 +35,18 @@ const Login = () => {
             });
     
             const data = await response.json();
+            console.log(data);
             
             if (data.response == 401) {
                 setErrorMessage("Incorrect email or password")
                 errorRef.current.focus();
             }
             else {
+                const role  = data.role;
+                const accessToken = data.accessToken;
+                props.setToken(data.accessToken);
+                localStorage.setItem('email', email)
+                setAuth({ email, password, role, accessToken });
                 setSuccess(true)
                 setEmail("");
                 setPassword("");
@@ -51,7 +57,7 @@ const Login = () => {
             if (!err?.response) {
                 setErrorMessage("No Server Response");
             } else {
-                setErrorMessage("Registration Failed");
+                setErrorMessage("Login Failed");
             }
             errorRef.current.focus();
         }
@@ -65,7 +71,7 @@ const Login = () => {
                 <section className="auth-form">
                     <h1>You're logged in!</h1>
                     <p>
-                        <a className="auth-form-link" href="/dashboard">Go to dashboard</a>
+                        <NavLink className="auth-form-link" to="/dashboard"> Go to dashboard</NavLink>
                     </p>
                 </section>
             ) : (
