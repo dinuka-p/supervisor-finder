@@ -42,6 +42,7 @@ class Users(UserMixin, db.Model):
     userEmail = db.Column(db.String(200), nullable=False, unique=True)
     userPassword = db.Column(db.Text)
     userRole = db.Column(db.String(60))
+    userBio = db.Column(db.Text)
 
     def get_id(self):
         return str(self.userID)

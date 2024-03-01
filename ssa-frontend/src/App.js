@@ -7,23 +7,26 @@ import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SupervisorDetails from "./components/SupervisorDetails";
-import useToken from "./components/UseToken";
+import { useAuth } from "./context/AuthProvider";
+import StudentProfiles from "./components/StudentProfiles";
 
 function App() {
   
-  const {token, removeToken, setToken} = useToken();
+  const { auth } = useAuth();
 
   return (
     <BrowserRouter>
       
-        {!token && token!=="" && token!==undefined?
+        {auth.role !== "Supervisor"?
         (<div className="App"> 
           <Sidebar />
           <Routes>
-            <Route path="/login" element={<Login setToken={setToken}/>} />
+            <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<SignUp/>} />
             <Route path="/" element={<SupervisorProfiles/>} />
             <Route path="/supervisor/:id" element={<SupervisorDetails/>} />
+            <Route path="/dashboard" element={<Dashboard/>} />
+            <Route path="/your-profile" element={<UserProfile/>} />
           </Routes>
         </div>)
         :(
@@ -31,12 +34,13 @@ function App() {
           <div className="App"> 
             <Sidebar />
             <Routes>
-              <Route path="/login" element={<Login setToken={setToken}/>} />
+              <Route path="/login" element={<Login/>} />
               <Route path="/signup" element={<SignUp/>} />
               <Route path="/" element={<SupervisorProfiles/>} />
               <Route path="/supervisor/:id" element={<SupervisorDetails/>} />
               <Route path="/dashboard" element={<Dashboard/>} />
-              <Route path="/your-profile" element={<UserProfile token={token} setToken={setToken}/>} />
+              <Route path="/your-profile" element={<UserProfile/>} />
+              <Route path="/students" element={<StudentProfiles/>} />
             </Routes>
           </div>
           </>

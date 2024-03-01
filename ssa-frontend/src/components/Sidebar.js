@@ -4,6 +4,7 @@ import "../App.css"
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import { useAuth } from  '../context/AuthProvider'
 
 const SidebarData = [
@@ -26,11 +27,19 @@ const SidebarData = [
 
 function Sidebar() {
     const location = useLocation();
-    const { auth, setAuth } = useAuth();
+    const { auth } = useAuth();
 
-    const handleLogout = () => {
-        setAuth({});
-    }
+    //adds students tab only if user is a supervisor
+    const studentsTab = auth.role === "Supervisor" ? [
+        {
+            title: "Students",
+            icon: <GroupsRoundedIcon fontSize="large" />,
+            link: "/students",
+        },
+    ] : [];
+
+    const updatedSidebar = [...SidebarData, ...studentsTab];
+
 
     return (
         <div className = "sidebar">
@@ -41,7 +50,7 @@ function Sidebar() {
                 </div>
                 <div>
                     <ul className="sidebar-items">
-                        {SidebarData.map((val,key) => {
+                        {updatedSidebar.map((val,key) => {
                             return (
                                 <li key = {key} 
                                 className="sidebar-row"
@@ -63,8 +72,12 @@ function Sidebar() {
                     <Link to="/signup" className="auth-button">Sign Up</Link>
                 </div>)}
               {auth.accessToken && (
-                <div className="sidebar-links">
-                    <button onClick={handleLogout} className="auth-button">Log Out</button>
+                <div className="sidebar-profile-container">
+                    <img className="sidebar-profile-image" src={require("../images/default-profile.jpg")} alt="" />
+                    <div className="sidebar-profile-details">
+                        <p id="name">{auth.name}</p>
+                        <p id="role">{auth.role}</p>
+                    </div>
                 </div>)}
         </div>
     )

@@ -168,8 +168,11 @@ def register_user():
                         userName=name)
         db.session.add(newUser)
         db.session.commit()
+    user = Users.query.filter_by(userEmail=email).first()
     cursor.close()
-    return jsonify({"response": 200})
+    login_user(user)
+    accessToken = create_access_token(identity=email)
+    return jsonify({"response": 200, "name": name, "role": role, "accessToken": accessToken})
 
 @app.route("/api/login", methods=["POST"])
 def login():
@@ -220,6 +223,15 @@ def my_profile(getemail):
         "email": user.userEmail
     }
     return response_body
+
+@app.route("/api/student-profiles", methods=["GET"])
+def display_students():
+    students = Users.query.filter_by(userRole='Student').all()
+    output = []
+    for student in students:
+        student_data = {"id":student.userID,"name": student.userName, "email": student.userEmail, "bio":student.userBio}
+        output.append(student_data)
+    return jsonify({"students": output})
 
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production

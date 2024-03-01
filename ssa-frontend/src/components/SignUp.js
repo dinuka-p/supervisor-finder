@@ -3,12 +3,14 @@ import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { NavLink } from "react-router-dom";
 import "../App.css"
+import { useAuth } from "../context/AuthProvider";
 
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PW_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%()]).{6,20}$/;
 
 const SignUp = () => {
+    const { auth, setAuth } = useAuth();
     //useRef - sets focus on component (can be read by screen reader)
     const userRef = useRef();
     const errorRef = useRef();
@@ -42,6 +44,10 @@ const SignUp = () => {
     }, [email])
 
     useEffect(() => {
+        console.log(auth);
+    }, [auth])
+
+    useEffect(() => {
         const result = PW_REGEX.test(password);
         setValidPassword(result);
         const match = password === matchPassword;
@@ -72,30 +78,15 @@ const SignUp = () => {
             });
     
             const data = await response.json();
-            console.log(role);
             if (data.response == 409) {
                 setErrorMessage("Email already registered")
                 errorRef.current.focus();
             }
             else {
-                try {
-                    const response = await fetch("/api/login", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ email, password }),
-                        credentials: "include",
-                    });
-                    
-                } catch (err) {
-                    if (!err?.response) {
-                        setErrorMessage("No Server Response");
-                    } else {
-                        setErrorMessage("Login Failed");
-                    }
-                    errorRef.current.focus();
-                }
+                const name = data.name;
+                const role  = data.role;
+                const accessToken = data.accessToken;
+                setAuth({ email, name, role, accessToken });
                 setSuccess(true)
                 setName("");
                 setEmail("");
@@ -123,7 +114,7 @@ const SignUp = () => {
                 <section className="auth-form">
                     <h1>Success!</h1>
                     <p>
-                        <a className="auth-form-link" href="/login">Sign In</a>
+                        <NavLink className="auth-form-link" to="/dashboard"> Go to dashboard</NavLink>
                     </p>
                 </section>
             ) : (

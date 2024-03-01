@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import "../App.css"
 import { useAuth } from "../context/AuthProvider";
 
-function Login(props) {
+function Login() {
     const { setAuth } = useAuth();
     const userRef = useRef();
     const errorRef = useRef();
@@ -45,8 +45,6 @@ function Login(props) {
                 const name = data.name;
                 const role  = data.role;
                 const accessToken = data.accessToken;
-                props.setToken(data.accessToken);
-                localStorage.setItem('email', email)
                 setAuth({ email, name, role, accessToken });
                 setSuccess(true);
                 setEmail("");
