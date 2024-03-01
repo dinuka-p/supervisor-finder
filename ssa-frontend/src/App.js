@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SupervisorDetails from "./components/SupervisorDetails";
 import { useAuth } from "./context/AuthProvider";
 import StudentProfiles from "./components/StudentProfiles";
+import StudentDetails from "./components/StudentDetails";
 
 function App() {
   
@@ -41,6 +42,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard/>} />
               <Route path="/your-profile" element={<UserProfile/>} />
               <Route path="/students" element={<StudentProfiles/>} />
+              <Route path="/student/:id" element={<StudentDetails/>} />
             </Routes>
           </div>
           </>

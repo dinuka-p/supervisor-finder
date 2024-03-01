@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import "../App.css"
 import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
@@ -12,8 +12,6 @@ import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import WestRoundedIcon from '@mui/icons-material/WestRounded';
 
 
-
-//TODO - ADD STYLING TO BACK BUTTON
 function SupervisorDetails() {
     const { id } = useParams();
     const [supervisorData, setSupervisorData] = useState(null)
@@ -38,10 +36,10 @@ function SupervisorDetails() {
         <div className="page-content">
             <div className="page-heading-container">
                 <h1 className="page-title">Supervisor Details</h1>
-                <button className="back-button" onClick={()=>{window.location.pathname = "/"}}> 
+                <Link className="back-button" to="/"> 
                     <WestRoundedIcon/>
                     <p className="back-button-text">Back to Supervisors</p>
-                </button>
+                </Link>
             </div>
 
             <div className="profile-card">

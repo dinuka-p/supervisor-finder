@@ -233,6 +233,21 @@ def display_students():
         output.append(student_data)
     return jsonify({"students": output})
 
+@app.route("/api/student-details/<int:id>", methods=["GET"])
+def display_student_details(id):
+    student = Users.query.get(id)
+    filter_list = []
+    if student:
+        student_data = {
+            "id": student.userID,
+            "name": student.userName,
+            "email": student.userEmail,
+            "bio": student.userBio
+        }
+        return jsonify({"student_info": student_data})
+    else:
+        return jsonify({"error": "Student not found"}), 404
+
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
 
