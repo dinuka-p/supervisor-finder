@@ -5,6 +5,7 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import { useAuth } from  '../context/AuthProvider'
 
 const SidebarData = [
@@ -27,19 +28,41 @@ const SidebarData = [
 
 function Sidebar() {
     const location = useLocation();
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
 
-    //adds students tab only if user is a supervisor
-    const studentsTab = auth.role === "Supervisor" ? [
-        {
-            title: "Students",
-            icon: <GroupsRoundedIcon fontSize="large" />,
-            link: "/students",
-        },
-    ] : [];
+    let extraTabs = [];
 
-    const updatedSidebar = [...SidebarData, ...studentsTab];
+    if (auth.role === "Supervisor") {
+        //extra tabs for supervisors
+        extraTabs = [
+            {
+                title: "Students",
+                icon: <GroupsRoundedIcon fontSize="large" />,
+                link: "/students",
+            },
+            {
+                title: "Preferences",
+                icon: <FavoriteRoundedIcon fontSize="large" />,
+                link: "/preferences",
+            },
+        ];
+    } else if (auth.role === "Student") {
+        //extra tab for students
+        extraTabs = [
+            {
+                title: "Preferences",
+                icon: <FavoriteRoundedIcon fontSize="large" />,
+                link: "/preferences",
+            },
+        ];
+    }
 
+    const updatedSidebar = [...SidebarData, ...extraTabs];
+
+    const handleLogout = () => {
+        setAuth({});
+        localStorage.setItem("preferred", "");
+      }
 
     return (
         <div className = "sidebar">
@@ -72,13 +95,19 @@ function Sidebar() {
                     <Link to="/signup" className="auth-button">Sign Up</Link>
                 </div>)}
               {auth.accessToken && (
-                <div className="sidebar-profile-container">
-                    <img className="sidebar-profile-image" src={require("../images/default-profile.jpg")} alt="" />
-                    <div className="sidebar-profile-details">
-                        <p id="name">{auth.name}</p>
-                        <p id="role">{auth.role}</p>
+                <div className="sidebar-authenticated">
+                    <div className="sidebar-profile-container">
+                        <img className="sidebar-profile-image" src={require("../images/default-profile.jpg")} alt="" />
+                        <div className="sidebar-profile-details">
+                            <p id="name">{auth.name}</p>
+                            <div className="sidebar-profile-role-logout">
+                                <p id="role">{auth.role} •</p>
+                                <Link to="/" className="logout-button" onClick={handleLogout}>Log Out</Link>
+                            </div>
+                        </div>
                     </div>
-                </div>)}
+                </div>
+                )}
         </div>
     )
 }

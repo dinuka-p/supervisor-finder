@@ -36,7 +36,7 @@ function SupervisorProfiles() {
         }
         )
     }
-  }, [])
+  }, [auth])
 
   useEffect(() => {
     fetch("/api/supervisor-filters").then(
@@ -110,6 +110,13 @@ function SupervisorProfiles() {
       <div className="page-content">
       
         <h1 className="page-title">Supervisor Profiles</h1>
+
+        {!auth.accessToken && (
+          <div className="supervisor-demo">
+              Note! This is demo data from 2023, please log in to view current supervisors!
+          </div>
+        )}
+        
 
         <div className="search-bar-container">
           <div className="search-bar-div">

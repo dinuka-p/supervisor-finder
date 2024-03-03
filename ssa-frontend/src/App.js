@@ -10,6 +10,7 @@ import SupervisorDetails from "./components/SupervisorDetails";
 import { useAuth } from "./context/AuthProvider";
 import StudentProfiles from "./components/StudentProfiles";
 import StudentDetails from "./components/StudentDetails";
+import Preferences from "./components/Preferences";
 
 function App() {
   
@@ -18,37 +19,33 @@ function App() {
   return (
     <BrowserRouter>
       
-        {auth.role !== "Supervisor"?
-        (<div className="App"> 
-          <Sidebar />
-          <Routes>
-            <Route path="/login" element={<Login/>} />
-            <Route path="/signup" element={<SignUp/>} />
-            <Route path="/" element={<SupervisorProfiles/>} />
-            <Route path="/supervisor/:id" element={<SupervisorDetails/>} />
-            <Route path="/dashboard" element={<Dashboard/>} />
-            <Route path="/your-profile" element={<UserProfile/>} />
-          </Routes>
-        </div>)
-        :(
-          <>
-          <div className="App"> 
-            <Sidebar />
-            <Routes>
-              <Route path="/login" element={<Login/>} />
-              <Route path="/signup" element={<SignUp/>} />
-              <Route path="/" element={<SupervisorProfiles/>} />
-              <Route path="/supervisor/:id" element={<SupervisorDetails/>} />
-              <Route path="/dashboard" element={<Dashboard/>} />
-              <Route path="/your-profile" element={<UserProfile/>} />
-              <Route path="/students" element={<StudentProfiles/>} />
-              <Route path="/student/:id" element={<StudentDetails/>} />
-            </Routes>
-          </div>
-          </>
-        )}
+      <div className="App">
+        <Sidebar />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/" element={<SupervisorProfiles />} />
+          <Route path="/supervisor/:id" element={<SupervisorDetails />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/your-profile" element={<UserProfile />} />
+          
+          {auth.role === "Supervisor" && (
+            <>
+              <Route path="/students" element={<StudentProfiles />} />
+              <Route path="/student/:id" element={<StudentDetails />} />
+              <Route path="/preferences" element={<Preferences />} />
+            </>
+          )}
+          
+          {auth.role === "Student" && (
+            <>
+              <Route path="/preferences" element={<Preferences />} />
+            </>
+          )}
+      </Routes>
         
-      
+      </div>
+        
     </BrowserRouter>
   );
  }

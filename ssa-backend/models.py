@@ -43,9 +43,17 @@ class Users(UserMixin, db.Model):
     userPassword = db.Column(db.Text)
     userRole = db.Column(db.String(60))
     userBio = db.Column(db.Text)
+    favourites = db.Column(db.Text)
 
     def get_id(self):
         return str(self.userID)
     
     def __repr__(self):
         return "<Name %r>" %self.userName
+    
+class Preferences(db.Model):
+    preferenceID = db.Column(db.Integer, primary_key=True)
+    userEmail = db.Column(db.String(100), db.ForeignKey('users.userEmail'), nullable=False, unique=True)
+    submittedPreferences = db.Column(db.Text)
+    def __repr__(self):
+        return "<Name %r>" %self.userEmail

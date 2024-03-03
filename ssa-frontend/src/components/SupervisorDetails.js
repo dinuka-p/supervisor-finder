@@ -10,22 +10,91 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import WestRoundedIcon from '@mui/icons-material/WestRounded';
-
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import { useAuth } from "../context/AuthProvider";
+  
 
 function SupervisorDetails() {
+    const { auth }  = useAuth();
     const { id } = useParams();
-    const [supervisorData, setSupervisorData] = useState(null)
+    const [supervisorData, setSupervisorData] = useState(null);
+    const [ favButtonText, setFavButtonText ] = useState();
 
     useEffect(() => {
-        fetch(`/api/supervisor-details/${id}`).then(
-        res => res.json()
-        ).then(
-        data => {
-            setSupervisorData(data.supervisor_info)
-            console.log(supervisorData)
+        if (!auth.accessToken) {
+            fetch(`/api/supervisor-details/${id}`).then(
+            res => res.json()
+            ).then(
+            data => {
+                setSupervisorData(data.supervisor_info);
+            }
+            )
+        } else {
+            fetch(`/api/active-supervisor-details/${id}`).then(
+                res => res.json()
+                ).then(
+                data => {
+                    setSupervisorData(data.supervisor_info);
+                }
+                )
         }
-        )
     }, [id])
+
+    useEffect(() => {
+        if (supervisorData && auth.accessToken) {
+            const studentEmail = auth.email;
+            const supervisorEmail = supervisorData.email;
+            fetch(`/api/check-student-favourites/${studentEmail}/${supervisorEmail}`).then(
+                res => res.json()
+                ).then(
+                data => {
+                    console.log("checked",data);
+                    if (data.message === "removed") {
+                        setFavButtonText("Favourite");
+                    } else if (data.message === "added") {
+                        setFavButtonText("Favourited");
+                    }
+                }
+                )
+        }
+    }, [supervisorData])
+    
+
+    const handleFavourite = async (e) => {
+        e.preventDefault();
+        try {
+            const studentEmail = auth.email;
+            const supervisorEmail = supervisorData.email;
+            const response = await fetch("/api/manage-student-favourites", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ studentEmail, supervisorEmail }),
+                credentials: "include",
+            });
+    
+            const data = await response.json();
+            console.log(data);
+            
+            if (data.response == 401) {
+            }
+            else {
+                if (data.message == "removed") {
+                    setFavButtonText("Favourite");
+                  } else if (data.message == "added") {
+                    setFavButtonText("Favourited");
+                  }
+            }
+    
+            
+        } catch (err) {
+            if (!err?.response) {
+            } else {
+            }
+        }
+    }
 
     //TODO - if nothing is returned, display an error page
     if (!supervisorData) {
@@ -47,7 +116,25 @@ function SupervisorDetails() {
                     <img className="profile-image" src={require("../images/default-profile.jpg")} alt={supervisorData.name} />
                 </div>
                 <div className="profile-card-details">
-                    <h2 className="profile-card-name">{supervisorData.name}</h2>
+                    <div className="profile-card-header">
+                        <h2 className="profile-card-name">{supervisorData.name}</h2>
+                        {auth.role === "Student" && (
+                            <button className="profile-fav-button" onClick={handleFavourite}>
+                                {favButtonText === "Favourite" ? (
+                                    <>
+                                        <FavoriteBorderRoundedIcon fontSize="small" />
+                                        <p style={{ marginLeft: "7px" }}>{favButtonText}</p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <FavoriteRoundedIcon fontSize="small" />
+                                        <p style={{ marginLeft: "7px" }}>{favButtonText}</p>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
+
                     <div className="profile-card-data">
                         <MailOutlineRoundedIcon/>
                         <p className="profile-card-text">{supervisorData.email}</p>
@@ -62,11 +149,11 @@ function SupervisorDetails() {
                     </div>
                     <div className="profile-card-data">
                         <CalendarMonthOutlinedIcon/>
-                        <p className="profile-card-text">Office hours:</p>
+                        <p className="profile-card-text">Office hours: {supervisorData.officeHours}</p>
                     </div>
                     <div className="profile-card-data">
                         <AddLinkRoundedIcon/>
-                        <p className="profile-card-text">Booking link:</p>
+                        <p className="profile-card-text">Booking link: {supervisorData.bookingLink}</p>
                     </div>
                 </div>
             </div>
@@ -82,7 +169,7 @@ function SupervisorDetails() {
                     <div className="profile-card-data">
                         <div className="profile-card-text">
                             <h4 className="profile-data-no-margin">Project Examples:</h4>
-                            <p className="profile-data-no-margin">Link to project examples folder</p>
+                            <p className="profile-data-no-margin">{supervisorData.examples}</p>
                         </div>
                     </div>
 
@@ -93,7 +180,7 @@ function SupervisorDetails() {
                         <PeopleAltOutlinedIcon/>
                         <div className="profile-card-text">
                             <h4 className="profile-data-no-margin">Student Capacity:</h4>
-                            <p className="profile-data-no-margin">X students</p>
+                            <p className="profile-data-no-margin">{supervisorData.capacity} students</p>
                         </div>
                     </div>
                     <div className="profile-card-data">
@@ -107,8 +194,11 @@ function SupervisorDetails() {
                     <div className="profile-card-data">
                         <WorkHistoryOutlinedIcon/>
                         <div className="profile-card-text">
-                            <h4 className="profile-data-no-margin">Supervision Experience:</h4>
-                            <p className="profile-data-no-margin">X years</p>
+                            <h4 className="profile-data-no-margin">Tags:</h4>
+                            <div
+                                className="profile-data-no-margin"
+                                dangerouslySetInnerHTML={{ __html: supervisorData.filter_words.join('<br/>') }}
+                            />
                         </div>
                         <h4 className="profile-card-text"></h4>
                     </div>

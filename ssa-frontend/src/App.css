@@ -113,17 +113,6 @@
   padding: 5px 15px;
 }
 
-.logout-button {
-  margin: 0px 30px;
-  background-color: cadetblue;
-  border: none;
-  color: #ffffff;
-  border-radius: 10px;
-  font-size: large;
-  padding: 5px 15px;
-  margin-top: 35px;
-}
-
 .auth-button:hover {
   color: #014254 ;
 }
@@ -131,16 +120,15 @@
 .sidebar-profile-container {
   display: flex;
   align-items: center;
-  margin-bottom: 30px;
-  margin-right: 15px;
-  margin-left: 25px;
+  margin-bottom: 10px;
+  margin-left: 15px;
 }
 
 .sidebar-profile-image {
   height: 50px;
   border-radius: 50%;
   border: 1px solid #f1f1f1;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .sidebar-profile-details {
@@ -150,14 +138,36 @@
 }
 
 .sidebar-profile-details #name {
-  font-size: large;
+  font-size: medium;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .sidebar-profile-details #role {
-  font-style: italic;
-  margin-top: 10px;
+  font-size: medium;
+  margin: 5px 0px;
+}
+
+.sidebar-profile-role-logout {
+  display: flex;
+  align-items: center;
+}
+
+.logout-button {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 300;
+  margin-left: 5px;
+}
+
+.logout-button:hover {
+  color: cadetblue;
+  font-weight: 600;
+}
+
+
+.sidebar-authenticated {
+  margin-bottom: 25px;
 }
 
 .page-content {
@@ -179,6 +189,16 @@
   padding-top: 40px;
   padding-bottom: 20px;
   margin-bottom: 10px;
+}
+
+.supervisor-demo {
+  margin-bottom: 15px;
+  background-color: cadetblue;
+  color: #f1f1f1;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-bar-container {
@@ -331,9 +351,31 @@
   align-items: center;
 }
 
+.student-card-container {
+  display: flex;
+  justify-content: center;
+}
+
+.student-card {
+  display:flex;
+  margin: 15px 35px;
+  height: 280px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  align-items: center;
+  width: 80%;
+}
+
 .profile-image-container {
   height: 100%;
   padding: 20px;
+}
+
+.student-image-container {
+  height: 90%;
+  padding: 20px;
+  margin-top: 20px;
 }
 
 .profile-image {
@@ -346,12 +388,41 @@
   text-align: left;
   margin-left: 15px;
   padding: 5px 0;
+  width: 100%;
+}
+
+.profile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-fav-button {
+  margin-right: 10px;
+  background-color: cadetblue;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  color: #f1f1f1;
+  font-weight: 500;
 }
 
 .profile-card-data {
   display: flex;
   align-items: center;
   margin: 0;
+}
+
+.student-card-data {
+  display: flex;
+  margin: 0;
+}
+
+.student-about-me {
+  margin-top: 10px;
 }
 
 .profile-card-name {
@@ -361,6 +432,12 @@
 .profile-card-text {
   margin: 13px 0;
   margin-left: 15px;
+}
+
+.student-card-text {
+  margin: 13px 0;
+  margin-left: 15px;
+  height: 150px;
 }
 
 .profile-info {
@@ -524,4 +601,91 @@ form {
 .auth-submit:hover {
   color: #014254;
   background-color: #f1f1f1;
+}
+
+.preferences-card {
+  display:flex;
+  margin: 15px 35px;
+  height: 400px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  width: 80%;
+}
+
+.preferences-info {
+  margin-left: 40px;
+  margin-top: 10px;
+  padding: 20px;
+  text-align: left;
+  width: 50%;
+}
+
+.favourites-list {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.favourites-list-option {
+  display: flex;
+  align-items: center;
+}
+
+.favourites-list-option-name {
+  margin: 7px;
+  font-size: large;
+}
+
+.favourites-list-option-name:hover {
+ font-weight: 600;
+}
+
+.preference-choices-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+}
+
+.preference-choices {
+  display: flex;
+  width: fit-content;
+  margin-top: 5px;
+}
+
+.preference-numbers {
+  padding-top: 5px;
+  margin-bottom: 10px;
+}
+
+.preference-number-option {
+  padding-top: 4px;
+}
+
+.preferred-list {
+  list-style-type: none;
+  padding-left: 20px;
+  min-width: 100px;
+}
+
+.preferred-list-option {
+  margin-top: 5px;
+  border: 1px solid cadetblue;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.preferences-submit-button {
+  background-color: cadetblue;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  color: #f1f1f1;
+  font-weight: 500;
+  font-size: medium;
+  padding: 10px;
+  width: fit-content;
+  margin-top: 20px;
 }

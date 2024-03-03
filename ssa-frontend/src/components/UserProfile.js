@@ -9,6 +9,7 @@ function UserProfile() {
 
   useEffect(() => {
     if (auth.accessToken) {
+      console.log(auth);
       fetch(`/api/user-profile/${auth.email}`, {
         method: "GET",
         headers: {
@@ -26,19 +27,10 @@ function UserProfile() {
     }
   }, [auth.accessToken])
 
-  const handleLogout = () => {
-    setAuth({});
-    setProfileData(({
-      profileName: "",
-      profileEmail: ""}))
-  }
-
     return (
       <div className="page-content">
         <div className="page-heading-container">
             <h1 className="page-title">Your Profile</h1>
-            {auth.accessToken && (
-              <button onClick={handleLogout} className="logout-button">Log Out</button> )}
         </div>
         {!auth.accessToken && (
             <h2>Please log in to view your profile</h2>)}

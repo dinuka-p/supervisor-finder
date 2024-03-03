@@ -23,7 +23,7 @@ from flask_cors import CORS
 
 
 from config import config
-from models import db, Supervisors, Users, ActiveSupervisors
+from models import db, Supervisors, Users, ActiveSupervisors, Preferences
 
 # DB_SERVER = 'fyp-db.mysql.database.azure.com'
 # DB_USER = 'dinuka'
@@ -105,9 +105,39 @@ def display_supervisor_details(id):
             "name": supervisor.supervisorName,
             "email": supervisor.supervisorEmail,
             "projects": supervisor.projectKeywords,
+            "examples": "Link to project examples folder",
             "filter_words": filter_list,
             "contact": supervisor.preferredContact,
-            "location": supervisor.location
+            "location": supervisor.location,
+            "officeHours": "",
+            "capacity": "X",
+            "bookingLink": ""
+        }
+        return jsonify({"supervisor_info": supervisor_data})
+    else:
+        return jsonify({"error": "Supervisor not found"}), 404
+    
+@app.route("/api/active-supervisor-details/<int:id>", methods=["GET"])
+def display_active_supervisor_details(id):
+    supervisor = ActiveSupervisors.query.get(id)
+    filter_list = []
+    if supervisor:
+        unique_filters = supervisor.filterWords.split(",")
+        for filters in unique_filters:
+            filter_list.append(filters)
+        supervisor_data = {
+            "id": supervisor.supervisorID,
+            "name": supervisor.supervisorName,
+            "email": supervisor.supervisorEmail,
+            "projects": supervisor.bio,
+            "examples": supervisor.projectExamples,
+            "filter_words": filter_list,
+            "contact": supervisor.preferredContact,
+            "location": supervisor.location,
+            "officeHours": supervisor.officeHours,
+            "capacity": supervisor.capacity,
+            "bookingLink": supervisor.bookingLink
+            
         }
         return jsonify({"supervisor_info": supervisor_data})
     else:
@@ -146,21 +176,6 @@ def register_user():
         password = request_data["password"]
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        #if user is a supervisor add to active supervisor table
-        if role == "Supervisor":
-            activeSupervisor = ActiveSupervisors(supervisorEmail=email,
-                            supervisorName=name, 
-                            preferredContact= "", 
-                            location= "", 
-                            officeHours= "", 
-                            bookingLink= "", 
-                            bio= "", 
-                            projectExamples= "", 
-                            filterWords= "", 
-                            capacity= 0)
-            db.session.add(activeSupervisor)
-            db.session.commit()
-        
         #all users added to user table (for password storing)
         newUser = Users(userEmail=email,
                         userPassword=hashed_password,
@@ -168,7 +183,29 @@ def register_user():
                         userName=name)
         db.session.add(newUser)
         db.session.commit()
-    user = Users.query.filter_by(userEmail=email).first()
+
+        user = Users.query.filter_by(userEmail=email).first()
+        #students and supervisors added to preferences table
+        if user.userRole != "Guest":
+            newPreferenceUser = Preferences(userEmail=email)
+            db.session.add(newPreferenceUser)
+            db.session.commit()
+
+            #supervisors also added to active supervisor table
+            if role == "Supervisor":
+                activeSupervisor = ActiveSupervisors(supervisorEmail=email,
+                                supervisorName=name, 
+                                preferredContact= "", 
+                                location= "", 
+                                officeHours= "", 
+                                bookingLink= "", 
+                                bio= "", 
+                                projectExamples= "", 
+                                filterWords= "", 
+                                capacity= 0)
+                db.session.add(activeSupervisor)
+                db.session.commit()
+
     cursor.close()
     login_user(user)
     accessToken = create_access_token(identity=email)
@@ -247,6 +284,125 @@ def display_student_details(id):
         return jsonify({"student_info": student_data})
     else:
         return jsonify({"error": "Student not found"}), 404
+    
+@app.route("/api/check-student-favourites/<studentEmail>/<supervisorEmail>", methods=["GET"])
+def check_student_favourites(studentEmail, supervisorEmail):
+    message = "user not in database"
+    user = Users.query.filter_by(userEmail=studentEmail).first()
+    if user:
+        if user.favourites is None:
+            message = "removed"
+        else:
+            favourites_list = user.favourites.split(",")
+            if supervisorEmail in favourites_list:
+                message = "added"
+            else:
+                message = "removed"
+        return jsonify({"response": 200, "message": message})
+    else:
+        return jsonify({"response": 401, "message": message})
+    
+@app.route("/api/manage-student-favourites", methods=["POST"])
+def manage_student_favourites():
+    request_data = request.get_json()
+    studentEmail = request_data["studentEmail"]
+    supervisorEmail = request_data["supervisorEmail"]
+    message = "user not in database"
+    favourites_list = []
+    user = Users.query.filter_by(userEmail=studentEmail).first()
+    if user:
+        if user.favourites is None:
+            favourites_list.append(supervisorEmail)
+            message = "added"
+        else:
+            favourites_list = user.favourites.split(",")
+
+            if supervisorEmail in favourites_list:
+                #remove supervisor from the list
+                favourites_list.remove(supervisorEmail)
+                message = "removed"
+            else:
+                #add supervisor to the list
+                favourites_list.append(supervisorEmail)
+                message = "added"
+        user.favourites = ",".join(favourites_list)
+        db.session.commit()
+        return jsonify({"response": 200, "message": message})
+    else:
+        return jsonify({"response": 401, "message": message})
+
+@app.route("/api/check-supervisor-favourites/<supervisorEmail>/<studentEmail>", methods=["GET"])
+def check_supervisor_favourites(supervisorEmail, studentEmail):
+    message = "user not in database"
+    user = Users.query.filter_by(userEmail=supervisorEmail).first()
+    if user:
+        if user.favourites is None:
+            message = "removed"
+        else:
+            favourites_list = user.favourites.split(",")
+            if studentEmail in favourites_list:
+                message = "added"
+            else:
+                message = "removed"
+        return jsonify({"response": 200, "message": message})
+    else:
+        return jsonify({"response": 401, "message": message})
+    
+@app.route("/api/manage-supervisor-favourites", methods=["POST"])
+def manage_supervisor_favourites():
+    request_data = request.get_json()
+    supervisorEmail = request_data["supervisorEmail"]
+    studentEmail = request_data["studentEmail"]
+    message = "user not in database"
+    favourites_list = []
+    user = Users.query.filter_by(userEmail=supervisorEmail).first()
+    if user:
+        if user.favourites is None:
+            favourites_list.append(studentEmail)
+            message = "added"
+        else:
+            favourites_list = user.favourites.split(",")
+
+            if studentEmail in favourites_list:
+                #remove supervisor from the list
+                favourites_list.remove(studentEmail)
+                message = "removed"
+            else:
+                #add supervisor to the list
+                favourites_list.append(studentEmail)
+                message = "added"
+        user.favourites = ",".join(favourites_list)
+        db.session.commit()
+        return jsonify({"response": 200, "message": message})
+    else:
+        return jsonify({"response": 401, "message": message})
+    
+@app.route("/api/get-favourites/<userEmail>", methods=["GET"])
+def get_favourites(userEmail):
+    user = Users.query.filter_by(userEmail=userEmail).first()
+    favourites_list = []
+    if user:
+        unique_favourites = user.favourites.split(",")
+        for favourites in unique_favourites:
+            user = Users.query.filter_by(userEmail=favourites).first()
+            favourite_details = {"name": user.userName, "email": user.userEmail}
+            favourites_list.append(favourite_details)
+        return jsonify({"favourites": favourites_list})
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
+@app.route("/api/submit-preferences", methods=["POST"])
+def submit_preferences():
+    request_data = request.get_json()
+    userEmail = request_data["userEmail"]
+    preferences = request_data["preferred"]
+    user = Preferences.query.filter_by(userEmail=userEmail).first() #all students and supervisors added to Preferences when they register
+    serialized_list = json.dumps(preferences)
+    if user: 
+        user.submittedPreferences = serialized_list
+        db.session.commit()
+    return jsonify({"response": 200})
+        
 
 if __name__ == "__main__":
 #     app.run(debug=False, host='0.0.0.0') #changes are updated immediately - set to False once in production
