@@ -33,7 +33,10 @@ function UserProfile() {
         data => {
             setProfileData(({
               profileName: data.name,
-              profileEmail: data.email}))
+              profileEmail: data.email}));
+            if (auth.role == "Student") {
+              setBio(data.bio);
+            }
         }
         )
     }

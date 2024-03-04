@@ -297,6 +297,22 @@
   color: #ffffff;
 }
 
+.student-summary {
+  background-color: #ffffff;
+  color: #014254;
+  border-radius: 10px;
+  height: 140px;
+  margin: 10px;
+  text-align: left;
+  padding: 0% 7%;
+}
+
+.student-summary:hover {
+  background-color: cadetblue;
+  color: #ffffff;
+}
+
+
 .supervisor-name {
   margin-top: 15px;
   margin-bottom: 5px;

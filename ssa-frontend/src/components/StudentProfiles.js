@@ -62,7 +62,7 @@ function StudentProfiles() {
                 }
             }
           ).map((student) => (
-            <motion.div layout key={student.id} className="supervisor-summary" onClick={() => handleStudentClick(student.id)}>
+            <motion.div layout key={student.id} className="student-summary" onClick={() => handleStudentClick(student.id)}>
               <h4 className="supervisor-name">{student.name}</h4>
               <p className="supervisor-email">{student.email}</p>
               <p className="supervisor-projects">{student.bio}</p>

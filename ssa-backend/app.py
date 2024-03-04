@@ -257,7 +257,8 @@ def my_profile(getemail):
     response_body = {
         "id": user.userID,
         "name": user.userName,
-        "email": user.userEmail
+        "email": user.userEmail,
+        "bio": user.userBio
     }
     return response_body
 
