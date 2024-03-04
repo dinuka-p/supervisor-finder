@@ -801,3 +801,39 @@
   justify-content: center;
   margin-top: 10px;
 }
+
+.timeline {
+  width: 80%;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-summary {
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  border-radius: 10px;
+  width: 80%;
+  height: 140px;
+  margin-top: 20px;
+}
+
+.dashboard-item {
+  width: 30%;
+}
+
+.dashboard-text {
+  font-size: x-large;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.dashboard-info-divider {
+  background-color: #014254;
+  width: 2px;
+  margin: 20px 10px;
+}

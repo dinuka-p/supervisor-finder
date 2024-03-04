@@ -12,7 +12,26 @@ function Dashboard() {
               {!auth.accessToken && (
                 <h2>Please log in to view your dashboard</h2>)}
               {auth.accessToken && (
-                <h2>Welcome {auth.name}</h2>)}
+                <div className="dashboard-container">
+                  <div className="dashboard-summary">
+                    <div className="dashboard-item">
+                      <h3>Next task:</h3>
+                      <p className="dashboard-text">Submit your preferences</p>
+                    </div>
+                    <div className="dashboard-info-divider"> </div>
+                    <div className="dashboard-item">
+                      <h3>Deadline:</h3>
+                      <p className="dashboard-text">28th March</p>
+                    </div>
+                    <div className="dashboard-info-divider"> </div>
+                    <div className="dashboard-item">
+                      <h3>Countdown:</h3>
+                      <p className="dashboard-text">22 days to go</p>
+                    </div>
+                  </div>
+                  <img className="timeline" src={require("../images/timeline.png")} alt="Supervisor Allocation Timeline" />
+                </div>
+                )}
         </div>
     )
 }
