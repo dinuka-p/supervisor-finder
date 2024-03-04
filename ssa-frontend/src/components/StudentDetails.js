@@ -88,7 +88,7 @@ function StudentDetails() {
         <div className="page-content">
             <div className="page-heading-container">
                 <h1 className="page-title">Student Details</h1>
-                <Link className="back-button" to="/"> 
+                <Link className="back-button" to="/students"> 
                     <WestRoundedIcon/>
                     <p className="back-button-text">Back to Students</p>
                 </Link>

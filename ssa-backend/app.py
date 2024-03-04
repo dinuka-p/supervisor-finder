@@ -261,6 +261,25 @@ def my_profile(getemail):
     }
     return response_body
 
+@app.route('/api/supervisor-profile/<getemail>')
+@jwt_required() 
+def supervisor_profile(getemail):
+    if not getemail:
+        return jsonify({"error": "Unauthorized Access"}), 401
+    supervisor = ActiveSupervisors.query.filter_by(supervisorEmail=getemail).first()
+    filters_list = [tag.strip() for tag in supervisor.filterWords.split(',')]
+    response_body = {
+        "bio": supervisor.bio,
+        "location": supervisor.location,
+        "contact": supervisor.preferredContact,
+        "officeHours": supervisor.officeHours,
+        "booking": supervisor.bookingLink,
+        "examples": supervisor.projectExamples,
+        "capacity": supervisor.capacity,
+        "selectedFilters": filters_list
+    }
+    return response_body
+
 @app.route("/api/student-profiles", methods=["GET"])
 def display_students():
     students = Users.query.filter_by(userRole='Student').all()
@@ -401,6 +420,44 @@ def submit_preferences():
     if user: 
         user.submittedPreferences = serialized_list
         db.session.commit()
+    return jsonify({"response": 200})
+
+@app.route("/api/edit-profile", methods=["POST"])
+def edit_profile():
+    request_data = request.get_json()
+
+    email = request_data["email"]
+    bio = request_data["bio"]
+    location = request_data["location"]
+    contact = request_data["contact"]
+    officeHours = request_data["officeHours"]
+    booking = request_data["booking"]
+    examples = request_data["examples"]
+    capacity = request_data["capacity"]
+    selectedFilters = request_data["selectedFilters"]
+
+    cursor = db.session.connection()
+    user = Users.query.filter_by(userEmail=email).first()
+    if user:
+        #students and supervisors added to preferences table
+        if user.userRole == "Student":
+            user.userBio = bio
+            db.session.commit()
+
+        if user.userRole == "Supervisor":
+            supervisor = ActiveSupervisors.query.filter_by(supervisorEmail=email).first()
+            supervisor.bio = bio
+            supervisor.preferredContact = contact
+            supervisor.location = location
+            supervisor.officeHours = officeHours
+            supervisor.bookingLink = booking
+            supervisor.projectExamples = examples
+            filterWords = ', '.join(selectedFilters)
+            supervisor.filterWords = filterWords
+            supervisor.capacity = capacity
+            db.session.commit()
+
+    cursor.close()
     return jsonify({"response": 200})
         
 

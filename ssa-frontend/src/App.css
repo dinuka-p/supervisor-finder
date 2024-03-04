@@ -132,7 +132,6 @@
 }
 
 .sidebar-profile-details {
-  margin-right: 30px;
   text-align: left;
   margin-left: 5px;
 }
@@ -528,7 +527,7 @@
   margin-top: 5px;
 }
 
-form {
+.auth-form {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -538,7 +537,7 @@ form {
   padding-right: 1rem;
 }
 
-.auth-form-link, .auth-form-link:visited {
+.success-form-link, .success-form-link:visited {
   color: #014254;
 }
 
@@ -681,11 +680,108 @@ form {
   border: none;
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 30px;
   color: #f1f1f1;
   font-weight: 500;
   font-size: medium;
   padding: 10px;
-  width: fit-content;
+  width: 110px;
   margin-top: 20px;
+}
+
+.preferences-submit-button:hover {
+  font-weight: 600;
+}
+
+.edit-profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px 40px;
+  min-width: 600px;
+}
+
+.edit-profile-uneditable {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: 500;
+  color: dimgray;
+  margin-bottom: -10px;
+}
+
+.edit-profile-form {
+  width: 100%;
+}
+
+.edit-profile-flex {
+  display: flex;
+  margin-top: 20px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.edit-profile-flex-tags {
+  display: flex;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.edit-profile-label {
+  text-align: left;
+  font-weight: 500;
+  min-width: 105px;
+  max-width: 105px;
+}
+
+.edit-profile-label-tags {
+  text-align: left;
+  font-weight: 500;
+  margin-left: 50px;
+}
+
+.profile-bio-input {
+  width: 100%;
+  height: 100px;
+  font-family: Arial, sans-serif;
+}
+
+.profile-column-input {
+  width: 100%;
+  height: 20px;
+}
+
+.profile-capacity-input {
+  width: 30px;
+  height: 20px;
+}
+
+.edit-profile-flex #second{
+  margin-left: 10px;
+}
+
+.edit-profile-tags {
+  margin-left: 50px;
+}
+
+.tag-button {
+  margin: 5px 5px;
+  padding: 5px;
+  background-color: #ffffff;
+  color: #014254;
+  border-radius: 10px;
+  border: none;
+  font-size: smaller;
+}
+
+.tag-button.active {
+  color: #f1f1f1;
+  background-color: #014254; ;
+}
+
+.edit-profile-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }

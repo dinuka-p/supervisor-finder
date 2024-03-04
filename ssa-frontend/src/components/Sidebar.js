@@ -60,8 +60,8 @@ function Sidebar() {
     const updatedSidebar = [...SidebarData, ...extraTabs];
 
     const handleLogout = () => {
+        localStorage.removeItem("preferred");
         setAuth({});
-        localStorage.setItem("preferred", "");
       }
 
     return (

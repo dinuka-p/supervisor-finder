@@ -111,17 +111,17 @@ const SignUp = () => {
         <>
         <div className="auth-container">
             {success ? (
-                <section className="auth-form">
+                <section className="success-form">
                     <h1>Success!</h1>
                     <p>
-                        <NavLink className="auth-form-link" to="/dashboard"> Go to dashboard</NavLink>
+                        <NavLink className="success-form-link" to="/dashboard"> Go to dashboard</NavLink>
                     </p>
                 </section>
             ) : (
             <section className="signup-form">
                 <p ref={errorRef} className={errorMessage ? "errormessage" : "offscreen"}>{errorMessage}</p>
                 <h1 style={{marginBottom: '0px'}}>Sign Up</h1>
-                <form onSubmit={handleSubmit}>
+                <form className="auth-form" onSubmit={handleSubmit}>
                 <div className="auth-label-input">
                     <label className="auth-label" htmlFor="name">
                         *Name:

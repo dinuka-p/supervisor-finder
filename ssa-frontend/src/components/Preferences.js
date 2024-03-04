@@ -12,6 +12,7 @@ function Preferences() {
     const initialPreferred = storedPreferred ? JSON.parse(storedPreferred) : [];
 
     const [preferred, setPreferred] = useState(initialPreferred);
+    const [submitStatus, setSubmitStatus] = useState("Submit");
 
     useEffect(() => {
         const userEmail = auth.email;
@@ -53,6 +54,7 @@ function Preferences() {
                 }
             }
         });
+        setSubmitStatus("Submit");
     };
 
     const handleSubmit = async (e) => {
@@ -73,11 +75,9 @@ function Preferences() {
             const data = await response.json();
             console.log(data);
             
-            if (data.response == 401) {
+            if (data.response == 200) {
+                setSubmitStatus("Submitted!");
             }
-            else {
-            }
-    
             
         } catch (err) {
             if (!err?.response) {
@@ -106,7 +106,7 @@ function Preferences() {
                 
                     <div className="profile-info-divider"> </div>
                     <div className="preferences-info">
-                        <h3 className="profile-data-no-margin">Preferred Supervisors:</h3>
+                        <h3 className="profile-data-no-margin">Submit Preferences:</h3>
                         <div className="preference-choices-container">
                             <div className="preference-choices">
                                 <div className="preference-numbers">
@@ -122,7 +122,7 @@ function Preferences() {
                                     ))}
                                 </ul>
                             </div>
-                            <button className="preferences-submit-button" onClick={handleSubmit}>Submit Preferences</button>
+                            <button className="preferences-submit-button" onClick={handleSubmit}>{submitStatus}</button>
                             
                         </div>
                         
