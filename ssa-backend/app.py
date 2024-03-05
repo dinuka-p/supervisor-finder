@@ -313,7 +313,10 @@ def check_student_favourites(studentEmail, supervisorEmail):
         if user.favourites is None:
             message = "removed"
         else:
-            favourites_list = user.favourites.split(",")
+            if user.favourites:
+                favourites_list = user.favourites.split(",")
+            else:
+                favourites_list = []
             if supervisorEmail in favourites_list:
                 message = "added"
             else:
@@ -335,7 +338,10 @@ def manage_student_favourites():
             favourites_list.append(supervisorEmail)
             message = "added"
         else:
-            favourites_list = user.favourites.split(",")
+            if user.favourites:
+                favourites_list = user.favourites.split(",")
+            else:
+                favourites_list = []
 
             if supervisorEmail in favourites_list:
                 #remove supervisor from the list
@@ -359,7 +365,10 @@ def check_supervisor_favourites(supervisorEmail, studentEmail):
         if user.favourites is None:
             message = "removed"
         else:
-            favourites_list = user.favourites.split(",")
+            if user.favourites:
+                favourites_list = user.favourites.split(",")
+            else:
+                favourites_list = []
             if studentEmail in favourites_list:
                 message = "added"
             else:
@@ -380,8 +389,12 @@ def manage_supervisor_favourites():
         if user.favourites is None:
             favourites_list.append(studentEmail)
             message = "added"
+            user.favourites = favourites_list
         else:
-            favourites_list = user.favourites.split(",")
+            if user.favourites:
+                favourites_list = user.favourites.split(",")
+            else:
+                favourites_list = []
 
             if studentEmail in favourites_list:
                 #remove supervisor from the list
@@ -402,7 +415,10 @@ def get_favourites(userEmail):
     user = Users.query.filter_by(userEmail=userEmail).first()
     favourites_list = []
     if user:
-        unique_favourites = user.favourites.split(",")
+        if user.favourites:
+            unique_favourites = user.favourites.split(",")
+        else:
+            unique_favourites = []
         for favourites in unique_favourites:
             user = Users.query.filter_by(userEmail=favourites).first()
             favourite_details = {"name": user.userName, "email": user.userEmail}
