@@ -8,10 +8,8 @@ function Preferences() {
     
     const { auth } = useAuth();
     const [favourites, setFavourites] = useState([]);
-    const storedPreferred = localStorage.getItem("preferred");
-    const initialPreferred = storedPreferred ? JSON.parse(storedPreferred) : [];
 
-    const [preferred, setPreferred] = useState(initialPreferred);
+    const [preferred, setPreferred] = useState([{}]);
     const [submitStatus, setSubmitStatus] = useState("Submit");
 
     useEffect(() => {
@@ -26,34 +24,48 @@ function Preferences() {
     
     }, [])
 
-    //load existing preferred list from local storage
+    //load existing preferred list
     useEffect(() => {
-        const storedPreferred = localStorage.getItem("preferred");
-        if (storedPreferred) {
-            setPreferred(JSON.parse(storedPreferred));
-        }
-    }, []);
+        const userEmail = auth.email;
+        fetch(`/api/get-preferences/${userEmail}`).then(
+            res => res.json()
+            ).then(
+            data => {
+                setPreferred(data.preferences);
+                localStorage.setItem("preferred", JSON.stringify(data.preferences));
+                console.log("set preferred",data.preferences);
+            }
+            )
+    
+    }, [])
 
     //save preferred list to local storage on change
     useEffect(() => {
-        localStorage.setItem("preferred", JSON.stringify(preferred));
+        
     }, [preferred]);
 
     const handlePreference = (preference) => {
-        console.log(favourites, preferred)
-        setPreferred(prevPreferred => {
-            if (prevPreferred.includes(preference)) {
-                //if preference is already in list, remove them
-                return prevPreferred.filter(pref => pref !== preference);
+        console.log("pref",preferred,"clicked",preference)
+        setPreferred((prevPreferred) => {
+            const existingPreference = prevPreferred.find(
+                (pref) => pref.email === preference.email
+            );
+    
+            if (existingPreference) {
+                //if preference is already in the list, remove them
+                return prevPreferred.filter(
+                    (pref) => pref.email !== preference.email
+                );
             } else {
-                //otherwise, add them
-                if (preferred.length < 5) {
+                //otherwise, add them 
+                if (prevPreferred.length < 5) {
                     return [...prevPreferred, preference];
                 } else {
                     return [...prevPreferred];
                 }
             }
         });
+        localStorage.setItem("preferred", JSON.stringify(preferred));
         setSubmitStatus("Submit");
     };
 

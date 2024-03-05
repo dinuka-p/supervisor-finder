@@ -427,15 +427,31 @@ def get_favourites(userEmail):
     else:
         return jsonify({"error": "User not found"}), 404
     
+@app.route("/api/get-preferences/<userEmail>", methods=["GET"])
+def get_preferences(userEmail):
+    user = Preferences.query.filter_by(userEmail=userEmail).first()
+    preferences_list = []
+    if user:
+        if user.submittedPreferences:
+            unique_preferences = user.submittedPreferences.split(",")
+        else:
+            unique_preferences = []
+        for preferences in unique_preferences:
+            user = Users.query.filter_by(userEmail=preferences).first()
+            preferred_details = {"name": user.userName, "email": user.userEmail}
+            preferences_list.append(preferred_details)
+        return jsonify({"preferences": preferences_list})
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
 @app.route("/api/submit-preferences", methods=["POST"])
 def submit_preferences():
     request_data = request.get_json()
     userEmail = request_data["userEmail"]
-    preferences = request_data["preferred"]
+    preferences = ",".join(request_data["preferred"])
     user = Preferences.query.filter_by(userEmail=userEmail).first() #all students and supervisors added to Preferences when they register
-    serialized_list = json.dumps(preferences)
     if user: 
-        user.submittedPreferences = serialized_list
+        user.submittedPreferences = preferences
         db.session.commit()
     return jsonify({"response": 200})
 
