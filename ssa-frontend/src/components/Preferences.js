@@ -7,6 +7,7 @@ import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
 function Preferences() {
     
     const { auth } = useAuth();
+    const [group, setGroup] = useState("supervisors");
     const [favourites, setFavourites] = useState([]);
 
     const [preferred, setPreferred] = useState([{}]);
@@ -16,12 +17,14 @@ function Preferences() {
         const userEmail = auth.email;
         fetch(`/api/get-favourites/${userEmail}`).then(
             res => res.json()
-            ).then(
+        ).then(
             data => {
                 setFavourites(data.favourites);
             }
-            )
-    
+        )
+        if (auth.role == "Supervisor") {
+            setGroup("students");
+        }
     }, [])
 
     //load existing preferred list
@@ -38,11 +41,6 @@ function Preferences() {
             )
     
     }, [])
-
-    //save preferred list to local storage on change
-    useEffect(() => {
-        
-    }, [preferred]);
 
     const handlePreference = (preference) => {
         console.log("pref",preferred,"clicked",preference)
@@ -101,6 +99,8 @@ function Preferences() {
     return (
         <div className="page-content">
             <h1 className="page-title">Preferences</h1>
+            <p className="page-instructions">Mark {group} as a favourite by clicking the 'Favourite' button on their profiles. Favourited {group} will be displayed in the 'Your Favourites' list. 
+            When you're ready, add up to 5 {group} to the 'Submit Preferences' list in the order of your preference before submitting!</p>
             <div className="student-card-container">
                 <div className="preferences-card">
                     <div className="preferences-info">

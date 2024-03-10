@@ -13,7 +13,7 @@ function StudentProfiles() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (auth.role == "Supervisor") {
+    if (auth.role == "Supervisor" || auth.role == "Lead") {
         console.log(auth);
         fetch("/api/student-profiles").then(
         res => res.json()

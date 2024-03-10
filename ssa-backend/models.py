@@ -57,3 +57,9 @@ class Preferences(db.Model):
     submittedPreferences = db.Column(db.Text)
     def __repr__(self):
         return "<Name %r>" %self.userEmail
+    
+class Deadlines(db.Model):
+    taskID = db.Column(db.Integer, primary_key=True)
+    deadline = db.Column(db.DateTime)
+    def __repr__(self):
+        return "<Task %r>" %self.taskID

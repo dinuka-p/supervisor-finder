@@ -23,7 +23,7 @@ from flask_cors import CORS
 
 
 from config import config
-from models import db, Supervisors, Users, ActiveSupervisors, Preferences
+from models import db, Supervisors, Users, ActiveSupervisors, Preferences, Deadlines
 
 # DB_SERVER = 'fyp-db.mysql.database.azure.com'
 # DB_USER = 'dinuka'
@@ -186,7 +186,7 @@ def register_user():
 
         user = Users.query.filter_by(userEmail=email).first()
         #students and supervisors added to preferences table
-        if user.userRole != "Guest":
+        if user.userRole != "Lead":
             newPreferenceUser = Preferences(userEmail=email)
             db.session.add(newPreferenceUser)
             db.session.commit()
@@ -492,6 +492,83 @@ def edit_profile():
 
     cursor.close()
     return jsonify({"response": 200})
+
+@app.route("/api/get-deadlines", methods=["GET"])
+def get_deadlines():
+    dates = []
+
+    deadlines = Deadlines.query.all()
+    for task in deadlines:
+        dates.append(task.deadline)
+    return jsonify({"date1": dates[0], "date2": dates[1], "date3": dates[2], "date4": dates[3]})
+
+def parse_date(date_string):
+    
+    dateFormats = ['%a, %d %b %Y %H:%M:%S GMT', '%Y-%m-%dT%H:%M:%S.%fZ']
+    for dateFormat in dateFormats:
+        try:
+            #try parsing with the current format
+            # return datetime.strptime(date_string, dateFormat).strftime("%Y-%m-%d %H:%M:%S")
+        
+            #try parsing with the current format
+            parsed_date = datetime.strptime(date_string, dateFormat)
+            
+            #convert to UTC
+            utc_date = parsed_date.replace(tzinfo=timezone.utc)
+            return utc_date.strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            pass  #ignore ValueError and try the next format
+    
+    #raise error if neither format works
+    raise ValueError(f"Could not parse date: {date_string}")
+
+@app.route("/api/update-deadlines", methods=["POST"])
+def update_deadlines():
+    request_data = request.get_json()
+
+    #dates loaded from db and dates from datepicker have different formats
+    #so try parsing both formats
+    date1 = parse_date(request_data["date1"])
+    date2 = parse_date(request_data["date2"])
+    date3 = parse_date(request_data["date3"])
+    date4 = parse_date(request_data["date4"])
+    newDeadlines = [date1, date2, date3, date4]
+
+    i = 0
+    oldDeadlines = Deadlines.query.all()
+    for task in oldDeadlines:
+        task.deadline = newDeadlines[i]
+        i+= 1
+    db.session.commit()
+    return jsonify({"response": newDeadlines})
+
+@app.route("/api/get-dashboard-details", methods=["GET"])
+def get_dashboard():
+    formattedDate = "-"
+    currentTask = 1
+    countdown = "-"
+    dates = []
+    now = datetime.now()
+    deadlines = Deadlines.query.all()
+    for task in deadlines:
+        #dates not set yet, initialise values as above
+        if task.deadline is None:
+            return jsonify({"currentTask": currentTask, "deadline": formattedDate,  "countdown": countdown})
+        if task.deadline > now:
+            dates.append(task.deadline)
+
+    if len(dates) > 0:
+        nextDeadline = min(dates, key=lambda x: x - now)
+        currentTask = Deadlines.query.filter_by(deadline=nextDeadline).first().taskID
+    else: #all deadlines have already passed
+        currentTask = 4
+        nextDeadline = Deadlines.query.filter_by(taskID=currentTask).first().deadline
+    formattedDate = nextDeadline.strftime('%-d %B')
+    countdown = (nextDeadline - now).days
+    countdown = max(countdown, 0)
+    
+    return jsonify({"currentTask": currentTask, "deadline": formattedDate,  "countdown": countdown})
+    
         
 
 if __name__ == "__main__":

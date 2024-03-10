@@ -6,6 +6,7 @@ import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import { useAuth } from  '../context/AuthProvider'
 
 const SidebarData = [
@@ -19,11 +20,6 @@ const SidebarData = [
         icon: <DashboardRoundedIcon fontSize="large"/>, 
         link: "/dashboard",
     },
-    {
-        title: "Profile",
-        icon: <AssignmentIndRoundedIcon fontSize="large"/>, 
-        link: "/your-profile",
-    },
 ];
 
 function Sidebar() {
@@ -32,9 +28,25 @@ function Sidebar() {
 
     let extraTabs = [];
 
+    if (auth.role != "Lead") {
+        //no profile tab for module leads
+        extraTabs = [
+            {
+                title: "Profile",
+                icon: <AssignmentIndRoundedIcon fontSize="large"/>, 
+                link: "/your-profile",
+            },
+        ];
+    } 
+
     if (auth.role === "Supervisor") {
         //extra tabs for supervisors
         extraTabs = [
+            {
+                title: "Profile",
+                icon: <AssignmentIndRoundedIcon fontSize="large"/>, 
+                link: "/your-profile",
+            },
             {
                 title: "Students",
                 icon: <GroupsRoundedIcon fontSize="large" />,
@@ -50,9 +62,28 @@ function Sidebar() {
         //extra tab for students
         extraTabs = [
             {
+                title: "Profile",
+                icon: <AssignmentIndRoundedIcon fontSize="large"/>, 
+                link: "/your-profile",
+            },
+            {
                 title: "Preferences",
                 icon: <FavoriteRoundedIcon fontSize="large" />,
                 link: "/preferences",
+            },
+        ];
+    } else if (auth.role === "Lead") {
+        //extra tab for students
+        extraTabs = [
+            {
+                title: "Students",
+                icon: <GroupsRoundedIcon fontSize="large" />,
+                link: "/students",
+            },
+            {
+                title: "Admin",
+                icon: <ManageAccountsRoundedIcon fontSize="large" />,
+                link: "/admin",
             },
         ];
     }

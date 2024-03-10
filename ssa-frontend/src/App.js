@@ -11,6 +11,7 @@ import { useAuth } from "./context/AuthProvider";
 import StudentProfiles from "./components/StudentProfiles";
 import StudentDetails from "./components/StudentDetails";
 import Preferences from "./components/Preferences";
+import Admin from "./components/Admin";
 
 function App() {
   
@@ -34,6 +35,14 @@ function App() {
               <Route path="/students" element={<StudentProfiles />} />
               <Route path="/student/:id" element={<StudentDetails />} />
               <Route path="/preferences" element={<Preferences />} />
+            </>
+          )}
+
+        {auth.role === "Lead" && (
+            <>
+              <Route path="/students" element={<StudentProfiles />} />
+              <Route path="/student/:id" element={<StudentDetails />} />
+              <Route path="/admin" element={<Admin />} />
             </>
           )}
           

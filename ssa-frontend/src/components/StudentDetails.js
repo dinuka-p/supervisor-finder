@@ -95,7 +95,7 @@ function StudentDetails() {
             </div>
             <div className="student-card-container">
                 <div className="student-card">
-                    <div className="student-image-container">
+                    <div className="profile-image-container">
                         <img className="profile-image" src={require("../images/default-profile.jpg")} alt={studentData.name} />
                     </div>
                     <div className="profile-card-details">

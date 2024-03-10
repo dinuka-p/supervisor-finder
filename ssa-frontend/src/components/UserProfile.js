@@ -21,7 +21,7 @@ function UserProfile() {
 
 
   useEffect(() => {
-    if (auth.accessToken) {
+    if (auth.role == "Student") {
       fetch(`/api/user-profile/${auth.email}`, {
         method: "GET",
         headers: {

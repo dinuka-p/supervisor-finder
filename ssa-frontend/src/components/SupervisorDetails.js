@@ -162,7 +162,7 @@ function SupervisorDetails() {
                 <div className="profile-projects">
                     <div className="profile-card-data">
                         <div className="profile-card-text">
-                            <h4 className="profile-data-no-margin">Projects:</h4>
+                            <h4 className="profile-data-no-margin">About Me:</h4>
                             <p className="profile-data-no-margin">{supervisorData.projects}</p>
                         </div>
                     </div>
@@ -182,14 +182,6 @@ function SupervisorDetails() {
                             <h4 className="profile-data-no-margin">Student Capacity:</h4>
                             <p className="profile-data-no-margin">{supervisorData.capacity} students</p>
                         </div>
-                    </div>
-                    <div className="profile-card-data">
-                        <ForumOutlinedIcon/>
-                        <div className="profile-card-text">
-                            <h4 className="profile-data-no-margin">Supervision Style:</h4>
-                            <p className="profile-data-no-margin">Face-to-face/online</p>
-                        </div>
-                        <h4 className="profile-card-text"></h4>
                     </div>
                     <div className="profile-card-data">
                         <WorkHistoryOutlinedIcon/>

@@ -383,11 +383,6 @@
 }
 
 .profile-image-container {
-  height: 100%;
-  padding: 20px;
-}
-
-.student-image-container {
   height: 90%;
   padding: 20px;
   margin-top: 20px;
@@ -691,7 +686,7 @@
 }
 
 .preferences-submit-button {
-  background-color: cadetblue;
+  background-color: #5f9ea0;
   border-radius: 10px;
   border: none;
   display: flex;
@@ -804,6 +799,7 @@
 
 .timeline {
   width: 80%;
+  margin-top: 60px;
 }
 
 .dashboard-container {
@@ -830,10 +826,88 @@
   font-size: x-large;
   font-weight: 600;
   margin-top: 0;
+  height: 100%;
 }
 
 .dashboard-info-divider {
   background-color: #014254;
   width: 2px;
   margin: 20px 10px;
+}
+
+.deadline-items-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 12px;
+  width: 100%;
+  
+}
+
+.deadline-items {
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.deadline-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.deadline-heading {
+  margin: 0;
+}
+
+.deadline-p {
+  margin: 0;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  text-align: left;
+  min-height: 40px;
+}
+
+.deadline-date {
+  margin-bottom: 10px;
+}
+
+.deadline-submit-button, .deadline-submit-button.active {
+  background-color: cadetblue;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  color: #f1f1f1;
+  font-weight: 500;
+  font-size: medium;
+  padding: 10px;
+  width: 300px;
+  margin-top: 20px;
+}
+
+.deadline-submit-button.disabled {
+  opacity: 0.6;
+}
+
+.deadline-submit-button.active:hover {
+  font-weight: 600;
+}
+
+.deadline-submit-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.page-instructions {
+  text-align: left;
+  padding: 0 40px;
 }

@@ -29,7 +29,7 @@ const SignUp = () => {
     const [validMatch, setValidMatch] = useState(false);
     const [matchFocus, setMatchFocus] = useState(false);
 
-    const [role, setRole] = useState("Guest");
+    const [role, setRole] = useState("Student");
 
     const [errorMessage, setErrorMessage] = useState("");
     const [success, setSuccess] = useState(false);
@@ -190,12 +190,12 @@ const SignUp = () => {
                             className="auth-roles-radio"
                             type="radio"
                             name="role"
-                            value="Guest"
-                            id="guest"
-                            checked={role === "Guest"}
+                            value="Lead"
+                            id="lead"
+                            checked={role === "Lead"}
                             onChange={(e) => setRole(e.target.value)}
                         />
-                        <label className="auth-roles-label" htmlFor="guest">Guest</label>
+                        <label className="auth-roles-label" htmlFor="lead">Module Lead</label>
                     </div>
                 </div>
 
