@@ -270,6 +270,8 @@ def supervisor_profile(getemail):
     supervisor = ActiveSupervisors.query.filter_by(supervisorEmail=getemail).first()
     filters_list = [tag.strip() for tag in supervisor.filterWords.split(',')]
     response_body = {
+        "name": supervisor.supervisorName,
+        "email": supervisor.supervisorEmail,
         "bio": supervisor.bio,
         "location": supervisor.location,
         "contact": supervisor.preferredContact,
@@ -507,9 +509,6 @@ def parse_date(date_string):
     dateFormats = ['%a, %d %b %Y %H:%M:%S GMT', '%Y-%m-%dT%H:%M:%S.%fZ']
     for dateFormat in dateFormats:
         try:
-            #try parsing with the current format
-            # return datetime.strptime(date_string, dateFormat).strftime("%Y-%m-%d %H:%M:%S")
-        
             #try parsing with the current format
             parsed_date = datetime.strptime(date_string, dateFormat)
             

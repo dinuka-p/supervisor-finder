@@ -31,12 +31,11 @@ function UserProfile() {
         res => res.json()
         ).then(
         data => {
-            setProfileData(({
-              profileName: data.name,
-              profileEmail: data.email}));
-            if (auth.role == "Student") {
-              setBio(data.bio);
-            }
+          setProfileData(({
+            profileName: data.name,
+            profileEmail: data.email}));
+          setBio(data.bio);
+            
         }
         )
     }
@@ -51,15 +50,17 @@ function UserProfile() {
         res => res.json()
         ).then(
         data => {
-            setBio(data.bio);
-            setLocation(data.location);
-            setContact(data.contact);
-            setOfficeHours(data.officeHours);
-            setBooking(data.booking);
-            setExamples(data.examples);
-            setCapacity(data.capacity);
-            setSelectedFilters(data.selectedFilters);
-            console.log(data);
+          setProfileData(({
+            profileName: data.name,
+            profileEmail: data.email}));
+          setBio(data.bio);
+          setLocation(data.location);
+          setContact(data.contact);
+          setOfficeHours(data.officeHours);
+          setBooking(data.booking);
+          setExamples(data.examples);
+          setCapacity(data.capacity);
+          setSelectedFilters(data.selectedFilters);
 
         }
         )
@@ -80,13 +81,10 @@ function UserProfile() {
   const handleFilterClick = (e, selectedCategory) => {
     e.preventDefault();
     selectedCategory = selectedCategory.trim();
-    console.log(allFilters, selectedFilters);
     if (selectedFilters.includes(selectedCategory)) {
       setSelectedFilters(selectedFilters.filter((term) => term !== selectedCategory));
-      console.log("Result1:", selectedFilters);
     } else {
       setSelectedFilters([...selectedFilters, selectedCategory]);
-      console.log("Result2:", selectedFilters);
     }
   };
 
@@ -99,7 +97,6 @@ function UserProfile() {
 
     try {
         const email = auth.email;
-        console.log(JSON.stringify({ email, bio, location, contact, officeHours, booking, examples, capacity, selectedFilters }))
         const response = await fetch("/api/edit-profile", {
             method: "POST",
             headers: {

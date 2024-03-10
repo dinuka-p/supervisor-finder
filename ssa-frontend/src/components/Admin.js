@@ -20,7 +20,6 @@ function Admin() {
         res => res.json()
         ).then(
         data => {
-            console.log(data);
             setDate1(data.date1);
             setDate2(data.date2);
             setDate3(data.date3);
@@ -34,8 +33,6 @@ function Admin() {
     e.preventDefault();
 
     try {
-        
-        console.log({date1, date2, date3, date4})
         const response = await fetch("/api/update-deadlines", {
             method: "POST",
             headers: {
@@ -46,7 +43,6 @@ function Admin() {
         });
 
         const data = await response.json();
-        console.log(data);
         
         if (data.response == 200) {
             setSubmitStatus("Updated!");

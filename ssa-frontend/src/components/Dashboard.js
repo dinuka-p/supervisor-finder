@@ -36,7 +36,6 @@ function Dashboard() {
               setTimeline(1);
             }
             setCountdown(data.countdown);
-            console.log("dash",data);
         }
         )
 

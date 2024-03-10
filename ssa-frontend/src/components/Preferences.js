@@ -36,14 +36,12 @@ function Preferences() {
             data => {
                 setPreferred(data.preferences);
                 localStorage.setItem("preferred", JSON.stringify(data.preferences));
-                console.log("set preferred",data.preferences);
             }
             )
     
     }, [])
 
     const handlePreference = (preference) => {
-        console.log("pref",preferred,"clicked",preference)
         setPreferred((prevPreferred) => {
             const existingPreference = prevPreferred.find(
                 (pref) => pref.email === preference.email
@@ -83,7 +81,6 @@ function Preferences() {
             });
     
             const data = await response.json();
-            console.log(data);
             
             if (data.response == 200) {
                 setSubmitStatus("Submitted!");

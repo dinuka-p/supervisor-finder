@@ -44,10 +44,6 @@ const SignUp = () => {
     }, [email])
 
     useEffect(() => {
-        console.log(auth);
-    }, [auth])
-
-    useEffect(() => {
         const result = PW_REGEX.test(password);
         setValidPassword(result);
         const match = password === matchPassword;

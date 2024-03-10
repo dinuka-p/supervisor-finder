@@ -14,12 +14,10 @@ function StudentProfiles() {
 
   useEffect(() => {
     if (auth.role == "Supervisor" || auth.role == "Lead") {
-        console.log(auth);
         fetch("/api/student-profiles").then(
         res => res.json()
         ).then(
             data => {
-                console.log(data);
                 setAllStudents(data.students)
                 setAllStudents(data.students.sort((a, b) => a.name.localeCompare(b.name)))
             }

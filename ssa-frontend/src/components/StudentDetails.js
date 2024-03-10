@@ -20,7 +20,6 @@ function StudentDetails() {
         ).then(
         data => {
             setStudentData(data.student_info)
-            console.log(studentData)
         }
         )
     }, [id])
@@ -33,7 +32,6 @@ function StudentDetails() {
                 res => res.json()
                 ).then(
                 data => {
-                    console.log("checked",data);
                     if (data.message === "removed") {
                         setFavButtonText("Favourite");
                     } else if (data.message === "added") {
@@ -60,7 +58,6 @@ function StudentDetails() {
             });
     
             const data = await response.json();
-            console.log(data);
             
             if (data.response == 401) {
             }

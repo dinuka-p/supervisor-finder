@@ -35,7 +35,6 @@ function Login() {
             });
     
             const data = await response.json();
-            console.log(data);
             
             if (data.response == 401) {
                 setErrorMessage("Incorrect email or password")
