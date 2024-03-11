@@ -20,6 +20,7 @@ function SupervisorDetails() {
     const { id } = useParams();
     const [supervisorData, setSupervisorData] = useState(null);
     const [ favButtonText, setFavButtonText ] = useState();
+    const [profilePhoto, setProfilePhoto] = useState(require("../images/default-profile.jpg"));
 
     useEffect(() => {
         if (!auth.accessToken) {
@@ -35,7 +36,12 @@ function SupervisorDetails() {
                 res => res.json()
                 ).then(
                 data => {
-                    setSupervisorData(data.supervisor_info);
+                    const details = data.supervisor_info
+                    setSupervisorData(details);
+                    console.log("log", details);
+                    if (details?.photo && details.photo !== null) {
+                        setProfilePhoto("http://127.0.0.1:5000/"+details.photo);
+                    }
                 }
                 )
         }
@@ -111,7 +117,7 @@ function SupervisorDetails() {
 
             <div className="profile-card">
                 <div className="profile-image-container">
-                    <img className="profile-image" src={require("../images/default-profile.jpg")} alt={supervisorData.name} />
+                    <img className="profile-image" src={profilePhoto} alt={supervisorData.name} />
                 </div>
                 <div className="profile-card-details">
                     <div className="profile-card-header">

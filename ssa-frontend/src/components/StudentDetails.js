@@ -13,13 +13,19 @@ function StudentDetails() {
     const { id } = useParams();
     const [studentData, setStudentData] = useState(null)
     const [ favButtonText, setFavButtonText ] = useState();
+    const [profilePhoto, setProfilePhoto] = useState(require("../images/default-profile.jpg"));
 
     useEffect(() => {
         fetch(`/api/student-details/${id}`).then(
         res => res.json()
         ).then(
         data => {
-            setStudentData(data.student_info)
+            const details = data.student_info
+            setStudentData(details);
+            console.log("log", details);
+            if (details?.photo && details.photo !== null) {
+                setProfilePhoto("http://127.0.0.1:5000/"+details.photo);
+            }
         }
         )
     }, [id])
@@ -93,7 +99,7 @@ function StudentDetails() {
             <div className="student-card-container">
                 <div className="student-card">
                     <div className="profile-image-container">
-                        <img className="profile-image" src={require("../images/default-profile.jpg")} alt={studentData.name} />
+                        <img className="profile-image" src={profilePhoto} alt={studentData.name} />
                     </div>
                     <div className="profile-card-details">
                         <div className="profile-card-header">

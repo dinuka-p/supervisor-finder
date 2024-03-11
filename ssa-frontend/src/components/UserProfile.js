@@ -4,7 +4,7 @@ import { useAuth } from  '../context/AuthProvider'
 
 function UserProfile() {
 
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const [profileData, setProfileData] = useState(null);
 
   const [bio, setBio] = useState("");
@@ -18,10 +18,11 @@ function UserProfile() {
   const [allFilters, setAllFilters] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [submitStatus, setSubmitStatus] = useState("Submit");
+  const [picture, setPicture] = useState(null);
 
 
   useEffect(() => {
-    if (auth.role == "Student") {
+    if (auth.role === "Student") {
       fetch(`/api/user-profile/${auth.email}`, {
         method: "GET",
         headers: {
@@ -40,7 +41,7 @@ function UserProfile() {
         )
     }
 
-    if (auth.role == "Supervisor") {
+    if (auth.role === "Supervisor") {
       fetch(`/api/supervisor-profile/${auth.email}`, {
         method: "GET",
         headers: {
@@ -66,7 +67,7 @@ function UserProfile() {
         )
 
     }
-  }, [auth.accessToken])
+  }, [auth]) 
 
   useEffect(() => {
     fetch("/api/supervisor-filters").then(
@@ -92,23 +93,50 @@ function UserProfile() {
     setSubmitStatus("Submit");
   }
 
+  const handlePicChange = (e) => {
+    setPicture(e.target.files[0]);
+    handleFormUpdate();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
         const email = auth.email;
+
+        const formData = new FormData();
+        formData.append("email", email);
+        formData.append("bio", bio);
+        formData.append("location", location);
+        formData.append("contact", contact);
+        formData.append("officeHours", officeHours);
+        formData.append("booking", booking);
+        formData.append("examples", examples);
+        formData.append("capacity", capacity);
+        formData.append("selectedFilters", selectedFilters);
+        formData.append("picture", picture);
         const response = await fetch("/api/edit-profile", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+              "Authorization": "Bearer " + auth.accessToken,
             },
-            body: JSON.stringify({ email, bio, location, contact, officeHours, booking, examples, capacity, selectedFilters }),
+            body: formData,
             credentials: "include",
         });
 
         const data = await response.json();
-        if (data.response == 200) {
+        if (data.response === 200) {
             setSubmitStatus("Submitted!");
+            console.log("before change", auth)
+            //auth.photoPath = data.userPhotoPath;
+            const email = auth.email;
+            const name = auth.name;
+            const role  = auth.role;
+            const accessToken = auth.accessToken;
+            const photoPath = data.userPhotoPath;
+            setAuth({ email, name, role, accessToken, photoPath });
+            console.log("after change", auth)
+            
         }
         
     } catch (err) {
@@ -127,12 +155,20 @@ function UserProfile() {
           <>
             <div className="edit-profile-container">
               <h3>Edit Profile:</h3>
-              <div className="edit-profile-uneditable">
-                <p>Name: {profileData.profileName}</p>
-                <p>Email: {profileData.profileEmail}</p>
-              </div>
+              <form className="edit-profile-form" encType="multipart/form-data">
+                <div className="edit-profile-uneditable">
+                  <p>Name: {profileData.profileName}</p>
+                  <p>Email: {profileData.profileEmail}</p>
+                  <input className="edit-profile-image"
+                      type="file"
+                      id="picture" 
+                      name="picture"
+                      autoComplete="off"
+                      onChange={handlePicChange}
+                  />
+                </div>
 
-              <form className="edit-profile-form">
+              
                 <div className="edit-profile-flex">
                   <label className="edit-profile-label" htmlFor="bio">
                         About me:

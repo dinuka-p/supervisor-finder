@@ -1,5 +1,6 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "../App.css"
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
@@ -25,6 +26,18 @@ const SidebarData = [
 function Sidebar() {
     const location = useLocation();
     const { auth, setAuth } = useAuth();
+    const [profilePhoto, setProfilePhoto] = useState(require("../images/default-profile.jpg"));
+
+    useEffect(() => {
+        //update profile photo
+        if (auth && auth.photoPath && auth.photoPath !== "") {
+            console.log("auth.photoPath:", ("http://127.0.0.1:5000/"+auth.photoPath));
+            setProfilePhoto("http://127.0.0.1:5000/"+auth.photoPath);
+            //setProfilePhoto(require("../images/default-profile.jpg"));
+        } else {
+            setProfilePhoto(require("../images/default-profile.jpg"));
+        }
+    }, [auth]);
 
     let extraTabs = [];
 
@@ -128,7 +141,7 @@ function Sidebar() {
               {auth.accessToken && (
                 <div className="sidebar-authenticated">
                     <div className="sidebar-profile-container">
-                        <img className="sidebar-profile-image" src={require("../images/default-profile.jpg")} alt="" />
+                        <img className="sidebar-profile-image" src={profilePhoto} alt="" />
                         <div className="sidebar-profile-details">
                             <p id="name">{auth.name}</p>
                             <div className="sidebar-profile-role-logout">

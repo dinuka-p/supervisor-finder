@@ -44,7 +44,8 @@ function Login() {
                 const name = data.name;
                 const role  = data.role;
                 const accessToken = data.accessToken;
-                setAuth({ email, name, role, accessToken });
+                const photoPath = data.photoPath;
+                setAuth({ email, name, role, accessToken, photoPath });
                 setSuccess(true);
                 setEmail("");
                 setPassword("");

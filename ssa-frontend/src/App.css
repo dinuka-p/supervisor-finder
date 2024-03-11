@@ -125,7 +125,9 @@
 }
 
 .sidebar-profile-image {
-  height: 50px;
+  height: 40px;
+  width: 40px; 
+  object-fit: cover;
   border-radius: 50%;
   border: 1px solid #f1f1f1;
   margin-right: 5px;
@@ -389,8 +391,9 @@
 }
 
 .profile-image {
-  height:inherit;
-  width: auto;
+  height:220px;
+  width: 180px;
+  object-fit: cover; 
   border-radius: 10px;
 }
 

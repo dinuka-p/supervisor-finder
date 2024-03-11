@@ -1,6 +1,6 @@
 from gevent import monkey
 monkey.patch_all()
-
+import logging
 import json
 from flask import Flask, send_file, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 from io import BytesIO
 from gevent.pywsgi import WSGIServer
+from werkzeug.utils import secure_filename
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -47,11 +48,15 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-#when i create new tables, run these commands
-# with app.app_context():
-#     db.create_all()
+UPLOAD_FOLDER = "static/uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg"])
 
-    
+def allowedFile(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+#logging.basicConfig(filename='app.log', level=logging.DEBUG)
+
 @login_manager.user_loader
 def user_loader(user_id):
     return Users.query.get(int(user_id))
@@ -125,6 +130,7 @@ def display_active_supervisor_details(id):
         unique_filters = supervisor.filterWords.split(",")
         for filters in unique_filters:
             filter_list.append(filters)
+        user = Users.query.filter_by(userEmail=supervisor.supervisorEmail).first()
         supervisor_data = {
             "id": supervisor.supervisorID,
             "name": supervisor.supervisorName,
@@ -136,8 +142,8 @@ def display_active_supervisor_details(id):
             "location": supervisor.location,
             "officeHours": supervisor.officeHours,
             "capacity": supervisor.capacity,
-            "bookingLink": supervisor.bookingLink
-            
+            "bookingLink": supervisor.bookingLink,
+            "photo": user.userPhoto
         }
         return jsonify({"supervisor_info": supervisor_data})
     else:
@@ -221,7 +227,7 @@ def login():
     if user and bcrypt.check_password_hash(user.userPassword, password):
         login_user(user)
         accessToken = create_access_token(identity=email)
-        return jsonify({"response": 200, "name":user.userName, "role": user.userRole, "accessToken": accessToken})
+        return jsonify({"response": 200, "name":user.userName, "role": user.userRole, "accessToken": accessToken, "photoPath": user.userPhoto})
     else:
         return jsonify({"response": 401})
 
@@ -301,7 +307,8 @@ def display_student_details(id):
             "id": student.userID,
             "name": student.userName,
             "email": student.userEmail,
-            "bio": student.userBio
+            "bio": student.userBio,
+            "photo": student.userPhoto
         }
         return jsonify({"student_info": student_data})
     else:
@@ -459,25 +466,40 @@ def submit_preferences():
 
 @app.route("/api/edit-profile", methods=["POST"])
 def edit_profile():
-    request_data = request.get_json()
+    email = request.form.get("email")
+    bio = request.form.get("bio")
+    location = request.form.get("location")
+    contact = request.form.get("contact")
+    officeHours = request.form.get("officeHours")
+    booking = request.form.get("booking")
+    examples = request.form.get("examples")
+    capacity = request.form.get("capacity")
+    selectedFilters = request.form.getlist("selectedFilters[]")
 
-    email = request_data["email"]
-    bio = request_data["bio"]
-    location = request_data["location"]
-    contact = request_data["contact"]
-    officeHours = request_data["officeHours"]
-    booking = request_data["booking"]
-    examples = request_data["examples"]
-    capacity = request_data["capacity"]
-    selectedFilters = request_data["selectedFilters"]
+    file = request.files.get("picture")
+    #logging.info(f"Received edit profile request: {file}")
 
     cursor = db.session.connection()
+    if file and allowedFile(file.filename):
+        filename = email + "." + secure_filename(file.filename)
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(file_path)
+        userPhotoPath = f"{UPLOAD_FOLDER}/{filename}"
+        #logging.info(f"File saved successfully: {file_path}")
+        
+    else:
+        userPhotoPath = ""
+        #logging.info(f"File not saved")
+
     user = Users.query.filter_by(userEmail=email).first()
     if user:
-        #students and supervisors added to preferences table
         if user.userRole == "Student":
             user.userBio = bio
-            db.session.commit()
+        #logging.info(f"userPhotoPath: {userPhotoPath}")
+        user.userPhoto = userPhotoPath
+        #sql_statements = [str(statement) for statement in cursor.execute(text("SELECT * FROM Users"))]        
+        #logging.info(f"SQL Statements: {sql_statements}")
+        db.session.commit()
 
         if user.userRole == "Supervisor":
             supervisor = ActiveSupervisors.query.filter_by(supervisorEmail=email).first()
@@ -493,7 +515,7 @@ def edit_profile():
             db.session.commit()
 
     cursor.close()
-    return jsonify({"response": 200})
+    return jsonify({"response": 200, "userPhotoPath": userPhotoPath})
 
 @app.route("/api/get-deadlines", methods=["GET"])
 def get_deadlines():

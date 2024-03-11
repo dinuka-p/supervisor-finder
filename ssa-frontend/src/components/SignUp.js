@@ -10,7 +10,7 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0
 const PW_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%()]).{6,20}$/;
 
 const SignUp = () => {
-    const { auth, setAuth } = useAuth();
+    const { setAuth } = useAuth();
     //useRef - sets focus on component (can be read by screen reader)
     const userRef = useRef();
     const errorRef = useRef();
@@ -82,7 +82,8 @@ const SignUp = () => {
                 const name = data.name;
                 const role  = data.role;
                 const accessToken = data.accessToken;
-                setAuth({ email, name, role, accessToken });
+                const photoPath = "";
+                setAuth({ email, name, role, accessToken, photoPath });
                 setSuccess(true)
                 setName("");
                 setEmail("");
