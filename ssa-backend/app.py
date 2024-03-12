@@ -36,7 +36,7 @@ app = Flask(__name__)
 # mysqlDB = config
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
 app.secret_key = config["secret_key"]
 
 db.init_app(app)
@@ -453,7 +453,10 @@ def get_preferences(userEmail):
             preferred_details = {"name": preferred.userName, "email": preferred.userEmail}
             preferences_list.append(preferred_details)
         if student:
-            projects_list = [tag.strip() for tag in user.projects.split(',')]
+            if user.projects:
+                projects_list = [tag.strip() for tag in user.projects.split(',')]
+            else:
+                projects_list = []
             coding = user.codingLevel
         else:
             areas = ""
@@ -511,7 +514,8 @@ def edit_profile():
     if user:
         if user.userRole == "Student":
             user.userBio = bio
-        user.userPhoto = userPhotoPath
+        if userPhotoPath != "":
+            user.userPhoto = userPhotoPath
         db.session.commit()
 
         if user.userRole == "Supervisor":
@@ -594,12 +598,16 @@ def get_dashboard():
     if len(dates) > 0:
         nextDeadline = min(dates, key=lambda x: x - now)
         currentTask = Deadlines.query.filter_by(deadline=nextDeadline).first().taskID
-    else: #all deadlines have already passed
+    else: #all deadlines have already passed or none are set
         currentTask = 4
-        nextDeadline = Deadlines.query.filter_by(taskID=currentTask).first().deadline
-    formattedDate = nextDeadline.strftime('%-d %B')
-    countdown = (nextDeadline - now).days
-    countdown = max(countdown, 0)
+        query = Deadlines.query.filter_by(taskID=currentTask).first()
+        if query:
+            nextDeadline = query.deadline
+            formattedDate = nextDeadline.strftime('%-d %B')
+            countdown = (nextDeadline - now).days
+            countdown = max(countdown, 0)
+        else:
+            currentTask = 1
     
     return jsonify({"currentTask": currentTask, "deadline": formattedDate,  "countdown": countdown})
     

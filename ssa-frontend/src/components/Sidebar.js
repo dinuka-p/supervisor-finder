@@ -31,8 +31,7 @@ function Sidebar() {
     useEffect(() => {
         //update profile photo
         if (auth && auth.photoPath && auth.photoPath !== "") {
-            console.log("auth.photoPath:", ("http://127.0.0.1:5000/"+auth.photoPath));
-            setProfilePhoto("http://127.0.0.1:5000/"+auth.photoPath);
+            setProfilePhoto("http://127.0.0.1:8088/"+auth.photoPath);
             //setProfilePhoto(require("../images/default-profile.jpg"));
         } else {
             setProfilePhoto(require("../images/default-profile.jpg"));

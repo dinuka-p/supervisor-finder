@@ -127,7 +127,6 @@ function UserProfile() {
         const data = await response.json();
         if (data.response === 200) {
             setSubmitStatus("Submitted!");
-            console.log("before change", auth)
             //auth.photoPath = data.userPhotoPath;
             const email = auth.email;
             const name = auth.name;
@@ -135,8 +134,6 @@ function UserProfile() {
             const accessToken = auth.accessToken;
             const photoPath = data.userPhotoPath;
             setAuth({ email, name, role, accessToken, photoPath });
-            console.log("after change", auth)
-            
         }
         
     } catch (err) {

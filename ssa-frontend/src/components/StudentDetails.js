@@ -22,9 +22,8 @@ function StudentDetails() {
         data => {
             const details = data.student_info
             setStudentData(details);
-            console.log("log", details);
             if (details?.photo && details.photo !== null) {
-                setProfilePhoto("http://127.0.0.1:5000/"+details.photo);
+                setProfilePhoto("http://127.0.0.1:8088/"+details.photo);
             }
         }
         )

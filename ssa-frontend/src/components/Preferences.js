@@ -38,7 +38,6 @@ function Preferences() {
             res => res.json()
             ).then(
             data => {
-                console.log(data);
                 setPreferred(data.preferences);
                 localStorage.setItem("preferred", JSON.stringify(data.preferences));
                 if (data.role === "Student") {
