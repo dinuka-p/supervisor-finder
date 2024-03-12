@@ -52,7 +52,18 @@ class Users(UserMixin, db.Model):
     def __repr__(self):
         return "<Name %r>" %self.userName
     
-class Preferences(db.Model):
+class StudentPreferences(db.Model):
+    __tablename__ = "StudentPreferences"
+    preferenceID = db.Column(db.Integer, primary_key=True)
+    userEmail = db.Column(db.String(100), db.ForeignKey('users.userEmail'), nullable=False, unique=True)
+    submittedPreferences = db.Column(db.Text)
+    codingLevel = db.Column(db.String(30))
+    projects = db.Column(db.Text)
+    def __repr__(self):
+        return "<Name %r>" %self.userEmail
+    
+class SupervisorPreferences(db.Model):
+    __tablename__ = "SupervisorPreferences"
     preferenceID = db.Column(db.Integer, primary_key=True)
     userEmail = db.Column(db.String(100), db.ForeignKey('users.userEmail'), nullable=False, unique=True)
     submittedPreferences = db.Column(db.Text)

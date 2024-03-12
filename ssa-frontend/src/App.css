@@ -619,7 +619,7 @@
 .preferences-card {
   display:flex;
   margin: 15px 35px;
-  height: 400px;
+  height: 450px;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
@@ -627,11 +627,22 @@
 }
 
 .preferences-info {
-  margin-left: 40px;
+  margin-left: 30px;
   margin-top: 10px;
   padding: 20px;
+  padding-top: 0;
   text-align: left;
   width: 50%;
+}
+
+.preferences-info-student {
+  margin-left: 30px;
+  margin-top: 10px;
+  padding-bottom: 20px;
+  padding-top: 0;
+  padding-right: 10px;
+  text-align: left;
+  width: 75%;
 }
 
 .favourites-list {
@@ -656,7 +667,7 @@
 .preference-choices-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   width: fit-content;
 }
 
@@ -706,6 +717,49 @@
 
 .preferences-submit-button:hover {
   font-weight: 600;
+}
+
+.div-flex-left {
+  display: flex;
+  align-items: baseline;
+}
+
+.div-flex-column {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.div-flex-column-margin {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-left: 20px;
+}
+
+.preference-coding {
+  display: flex;
+  flex-direction: column;
+}
+
+.preference-areas {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+
+.preference-area-option {
+  margin-right: 10px;
+}
+
+.preference-coding-option {
+  margin-bottom: 5px;
+}
+
+.div-centered {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .edit-profile-container {
@@ -913,4 +967,17 @@
 .page-instructions {
   text-align: left;
   padding: 0 40px;
+}
+
+.h4-no-bottom-margin {
+  margin-bottom: 0;
+}
+
+.h4-no-top-margin {
+  margin-top: 0;
+}
+
+.h4-half-margin {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

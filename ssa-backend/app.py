@@ -24,7 +24,7 @@ from flask_cors import CORS
 
 
 from config import config
-from models import db, Supervisors, Users, ActiveSupervisors, Preferences, Deadlines
+from models import db, Supervisors, Users, ActiveSupervisors, StudentPreferences, SupervisorPreferences, Deadlines
 
 # DB_SERVER = 'fyp-db.mysql.database.azure.com'
 # DB_USER = 'dinuka'
@@ -191,26 +191,27 @@ def register_user():
         db.session.commit()
 
         user = Users.query.filter_by(userEmail=email).first()
-        #students and supervisors added to preferences table
-        if user.userRole != "Lead":
-            newPreferenceUser = Preferences(userEmail=email)
+        #students added to preferences table
+        if user.userRole == "Student":
+            newPreferenceUser = StudentPreferences(userEmail=email)
             db.session.add(newPreferenceUser)
             db.session.commit()
 
-            #supervisors also added to active supervisor table
-            if role == "Supervisor":
-                activeSupervisor = ActiveSupervisors(supervisorEmail=email,
-                                supervisorName=name, 
-                                preferredContact= "", 
-                                location= "", 
-                                officeHours= "", 
-                                bookingLink= "", 
-                                bio= "", 
-                                projectExamples= "", 
-                                filterWords= "", 
-                                capacity= 0)
-                db.session.add(activeSupervisor)
-                db.session.commit()
+        #supervisors added to preferences table and active supervisor table
+        if role == "Supervisor":
+            newPreferenceUser = SupervisorPreferences(userEmail=email)
+            activeSupervisor = ActiveSupervisors(supervisorEmail=email,
+                            supervisorName=name, 
+                            preferredContact= "", 
+                            location= "", 
+                            officeHours= "", 
+                            bookingLink= "", 
+                            bio= "", 
+                            projectExamples= "", 
+                            filterWords= "", 
+                            capacity= 0)
+            db.session.add(activeSupervisor)
+            db.session.commit()
 
     cursor.close()
     login_user(user)
@@ -438,7 +439,12 @@ def get_favourites(userEmail):
     
 @app.route("/api/get-preferences/<userEmail>", methods=["GET"])
 def get_preferences(userEmail):
-    user = Preferences.query.filter_by(userEmail=userEmail).first()
+    search = Users.query.filter_by(userEmail=userEmail).first()
+    if search.userRole == "Student":
+        user = StudentPreferences.query.filter_by(userEmail=userEmail).first()
+        student = True
+    elif  search.userRole == "Supervisor":
+        user = SupervisorPreferences.query.filter_by(userEmail=userEmail).first()
     preferences_list = []
     if user:
         if user.submittedPreferences:
@@ -446,10 +452,16 @@ def get_preferences(userEmail):
         else:
             unique_preferences = []
         for preferences in unique_preferences:
-            user = Users.query.filter_by(userEmail=preferences).first()
-            preferred_details = {"name": user.userName, "email": user.userEmail}
+            preferred = Users.query.filter_by(userEmail=preferences).first()
+            preferred_details = {"name": preferred.userName, "email": preferred.userEmail}
             preferences_list.append(preferred_details)
-        return jsonify({"preferences": preferences_list})
+        if student:
+            projects_list = [tag.strip() for tag in user.projects.split(',')]
+            coding = user.codingLevel
+        else:
+            areas = ""
+            coding = ""
+        return jsonify({"role": search.userRole, "preferences": preferences_list, "projects": projects_list, "coding": coding})
     else:
         return jsonify({"error": "User not found"}), 404
     
@@ -458,9 +470,19 @@ def submit_preferences():
     request_data = request.get_json()
     userEmail = request_data["userEmail"]
     preferences = ",".join(request_data["preferred"])
-    user = Preferences.query.filter_by(userEmail=userEmail).first() #all students and supervisors added to Preferences when they register
+    projects = ",".join(request_data["projects"])
+    coding = request_data["coding"]
+    search = Users.query.filter_by(userEmail=userEmail).first()
+    if search.userRole == "Student":
+        user = StudentPreferences.query.filter_by(userEmail=userEmail).first()
+        student = True
+    elif  search.userRole == "Supervisor":
+        user = SupervisorPreferences.query.filter_by(userEmail=userEmail).first()
     if user: 
         user.submittedPreferences = preferences
+        if student:
+            user.projects = projects
+            user.codingLevel = coding
         db.session.commit()
     return jsonify({"response": 200})
 
