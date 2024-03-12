@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "../App.css"
-import AuthContext from "../context/AuthProvider";
+import { useAuth } from "../context/AuthProvider";
 
-function Login(props) {
-    const { setAuth } = useContext(AuthContext);
+function Login() {
+    const { setAuth } = useAuth();
     const userRef = useRef();
     const errorRef = useRef();
 
@@ -35,19 +35,18 @@ function Login(props) {
             });
     
             const data = await response.json();
-            console.log(data);
             
             if (data.response == 401) {
                 setErrorMessage("Incorrect email or password")
                 errorRef.current.focus();
             }
             else {
+                const name = data.name;
                 const role  = data.role;
                 const accessToken = data.accessToken;
-                props.setToken(data.accessToken);
-                localStorage.setItem('email', email)
-                setAuth({ email, password, role, accessToken });
-                setSuccess(true)
+                const photoPath = data.photoPath;
+                setAuth({ email, name, role, accessToken, photoPath });
+                setSuccess(true);
                 setEmail("");
                 setPassword("");
             }
@@ -68,17 +67,17 @@ function Login(props) {
         <>
         <div className="auth-container">
             {success ? (
-                <section className="auth-form">
+                <section className="success-form">
                     <h1>You're logged in!</h1>
                     <p>
-                        <NavLink className="auth-form-link" to="/dashboard"> Go to dashboard</NavLink>
+                        <NavLink className="success-form-link" to="/dashboard"> Go to dashboard</NavLink>
                     </p>
                 </section>
             ) : (
             <section className="signin-form">
                 <p ref={errorRef} className={errorMessage ? "errormessage" : "offscreen"}>{errorMessage}</p>
                 <h1 style={{marginBottom: '0px'}}>Log In</h1>
-                <form onSubmit={handleSubmit}>
+                <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="auth-label-input">
                         <label className="auth-label" htmlFor="email">
                             Email:

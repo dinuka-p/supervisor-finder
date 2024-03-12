@@ -3,12 +3,14 @@ import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { NavLink } from "react-router-dom";
 import "../App.css"
+import { useAuth } from "../context/AuthProvider";
 
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PW_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%()]).{6,20}$/;
 
 const SignUp = () => {
+    const { setAuth } = useAuth();
     //useRef - sets focus on component (can be read by screen reader)
     const userRef = useRef();
     const errorRef = useRef();
@@ -27,7 +29,7 @@ const SignUp = () => {
     const [validMatch, setValidMatch] = useState(false);
     const [matchFocus, setMatchFocus] = useState(false);
 
-    const [role, setRole] = useState("Guest");
+    const [role, setRole] = useState("Student");
 
     const [errorMessage, setErrorMessage] = useState("");
     const [success, setSuccess] = useState(false);
@@ -72,12 +74,16 @@ const SignUp = () => {
             });
     
             const data = await response.json();
-            
             if (data.response == 409) {
                 setErrorMessage("Email already registered")
                 errorRef.current.focus();
             }
             else {
+                const name = data.name;
+                const role  = data.role;
+                const accessToken = data.accessToken;
+                const photoPath = "";
+                setAuth({ email, name, role, accessToken, photoPath });
                 setSuccess(true)
                 setName("");
                 setEmail("");
@@ -102,17 +108,17 @@ const SignUp = () => {
         <>
         <div className="auth-container">
             {success ? (
-                <section className="auth-form">
+                <section className="success-form">
                     <h1>Success!</h1>
                     <p>
-                        <a className="auth-form-link" href="/login">Sign In</a>
+                        <NavLink className="success-form-link" to="/dashboard"> Go to dashboard</NavLink>
                     </p>
                 </section>
             ) : (
             <section className="signup-form">
                 <p ref={errorRef} className={errorMessage ? "errormessage" : "offscreen"}>{errorMessage}</p>
                 <h1 style={{marginBottom: '0px'}}>Sign Up</h1>
-                <form onSubmit={handleSubmit}>
+                <form className="auth-form" onSubmit={handleSubmit}>
                 <div className="auth-label-input">
                     <label className="auth-label" htmlFor="name">
                         *Name:
@@ -181,12 +187,12 @@ const SignUp = () => {
                             className="auth-roles-radio"
                             type="radio"
                             name="role"
-                            value="Guest"
-                            id="guest"
-                            checked={role === "Guest"}
+                            value="Lead"
+                            id="lead"
+                            checked={role === "Lead"}
                             onChange={(e) => setRole(e.target.value)}
                         />
-                        <label className="auth-roles-label" htmlFor="guest">Guest</label>
+                        <label className="auth-roles-label" htmlFor="lead">Module Lead</label>
                     </div>
                 </div>
 
