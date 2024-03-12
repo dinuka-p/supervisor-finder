@@ -25,16 +25,16 @@ from flask_cors import CORS
 from config import config
 from models import db, Supervisors, Users, ActiveSupervisors, StudentPreferences, SupervisorPreferences, Deadlines
 
-DB_SERVER = 'fyp-db.mysql.database.azure.com'
-DB_USER = 'dinuka'
-DB_PASSWORD = os.getenv('DB_PW')
-DB_NAME = 'supervisor_finder_db'
+# DB_SERVER = 'fyp-db.mysql.database.azure.com'
+# DB_USER = 'dinuka'
+# DB_PASSWORD = os.getenv('DB_PW')
+# DB_NAME = 'supervisor_finder_db'
 
 app = Flask(__name__)
 
-# #for dev
-# mysqlDB = config
-# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
+#for dev
+mysqlDB = config
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
 app.secret_key = config["secret_key"]
