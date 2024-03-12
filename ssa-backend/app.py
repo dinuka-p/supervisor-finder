@@ -1,6 +1,5 @@
 from gevent import monkey
 monkey.patch_all()
-import logging
 import json
 from flask import Flask, send_file, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -26,16 +25,16 @@ from flask_cors import CORS
 from config import config
 from models import db, Supervisors, Users, ActiveSupervisors, StudentPreferences, SupervisorPreferences, Deadlines
 
-# DB_SERVER = 'fyp-db.mysql.database.azure.com'
-# DB_USER = 'dinuka'
-# DB_PASSWORD = os.getenv('DB_PW')
-# DB_NAME = 'supervisor_finder_db'
+DB_SERVER = 'fyp-db.mysql.database.azure.com'
+DB_USER = 'dinuka'
+DB_PASSWORD = os.getenv('DB_PW')
+DB_NAME = 'supervisor_finder_db'
 
 app = Flask(__name__)
 
-#for dev
-mysqlDB = config
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
+# #for dev
+# mysqlDB = config
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{user}:{password}@{host}/{db}".format(user=mysqlDB["mysql_user"], password=mysqlDB["mysql_password"], host=mysqlDB["mysql_host"], db=mysqlDB["mysql_db"])
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?charset=utf8mb4'
 app.secret_key = config["secret_key"]
@@ -54,8 +53,6 @@ ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg"])
 
 def allowedFile(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-#logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -499,7 +496,6 @@ def edit_profile():
     selectedFilters = request.form.getlist("selectedFilters[]")
 
     file = request.files.get("picture")
-    #logging.info(f"Received edit profile request: {file}")
 
     cursor = db.session.connection()
     if file and allowedFile(file.filename):
@@ -507,20 +503,15 @@ def edit_profile():
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(file_path)
         userPhotoPath = f"{UPLOAD_FOLDER}/{filename}"
-        #logging.info(f"File saved successfully: {file_path}")
         
     else:
         userPhotoPath = ""
-        #logging.info(f"File not saved")
 
     user = Users.query.filter_by(userEmail=email).first()
     if user:
         if user.userRole == "Student":
             user.userBio = bio
-        #logging.info(f"userPhotoPath: {userPhotoPath}")
         user.userPhoto = userPhotoPath
-        #sql_statements = [str(statement) for statement in cursor.execute(text("SELECT * FROM Users"))]        
-        #logging.info(f"SQL Statements: {sql_statements}")
         db.session.commit()
 
         if user.userRole == "Supervisor":
