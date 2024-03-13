@@ -303,7 +303,7 @@
   background-color: #ffffff;
   color: #014254;
   border-radius: 10px;
-  height: 140px;
+  height: 150px;
   margin: 10px;
   text-align: left;
   padding: 0% 7%;
@@ -332,6 +332,13 @@
   margin-top: 0;
   overflow: hidden;
   max-height: 115px;
+  font-size: medium;
+}
+
+.student-projects {
+  margin-top: 0;
+  overflow: hidden;
+  max-height: 75px;
   font-size: medium;
 }
 

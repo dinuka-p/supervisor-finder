@@ -103,19 +103,22 @@ function StudentDetails() {
                     <div className="profile-card-details">
                         <div className="profile-card-header">
                             <h2 className="profile-card-name">{studentData.name}</h2>
-                            <button className="profile-fav-button" onClick={handleFavourite}>
-                                        {favButtonText === "Favourite" ? (
-                                            <>
-                                                <FavoriteBorderRoundedIcon fontSize="small" />
-                                                <p style={{ marginLeft: "7px" }}>{favButtonText}</p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FavoriteRoundedIcon fontSize="small" />
-                                                <p style={{ marginLeft: "7px" }}>{favButtonText}</p>
-                                            </>
-                                        )}
-                                    </button>
+                            {auth.role === "Supervisor" && (
+                                <button className="profile-fav-button" onClick={handleFavourite}>
+                                    {favButtonText === "Favourite" ? (
+                                        <>
+                                            <FavoriteBorderRoundedIcon fontSize="small" />
+                                            <p style={{ marginLeft: "7px" }}>{favButtonText}</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FavoriteRoundedIcon fontSize="small" />
+                                            <p style={{ marginLeft: "7px" }}>{favButtonText}</p>
+                                        </>
+                                    )}
+                                </button>
+                            )}
+                            
                         </div>
 
                         <div className="profile-card-data">
